@@ -1,6 +1,24 @@
-import { Arg, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Field,
+  Int,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from "type-graphql";
 import { Post } from "../entities/Post";
 import { MyContext } from "../types";
+
+@ObjectType()
+class PostResponse {
+  @Field({ nullable: true })
+  post?: Post;
+
+  @Field({ nullable: true })
+  error?: String;
+}
 
 @Resolver(Post)
 export default class PostResolver {
@@ -17,28 +35,33 @@ export default class PostResolver {
     return em.findOne(Post, { id });
   }
 
-  @Mutation(() => Post)
+  @Mutation(() => PostResponse)
   async createPost(
     @Arg("title", () => String) title: string,
     @Ctx() { em }: MyContext
-  ): Promise<Post> {
+  ): Promise<PostResponse> {
+    if (!title) {
+      return { error: "Title cannot be empty" };
+    }
     const newPost = em.create(Post, { title });
     await em.persistAndFlush(newPost);
-    return newPost;
+    return { post: newPost };
   }
 
-  @Mutation(() => Post, { nullable: true })
+  @Mutation(() => PostResponse)
   async updatePost(
     @Arg("id", () => Int) id: number,
     @Arg("title", () => String) title: string,
     @Ctx() { em }: MyContext
-  ): Promise<Post | null> {
+  ): Promise<PostResponse> {
     const post = await em.findOne(Post, { id });
-    if (!post) return null;
+    if (!post) return { error: "Post not found" };
+
+    if (!title) return { error: "Title must not be empty" };
 
     post.title = title;
     await em.persistAndFlush(post);
-    return post;
+    return { post };
   }
 
   @Mutation(() => Boolean)
