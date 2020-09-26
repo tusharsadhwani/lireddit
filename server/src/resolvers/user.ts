@@ -55,10 +55,18 @@ export default class UserResolver {
     return em.findOne(User, { id });
   }
 
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { em, req }: MyContext): Promise<User | null> {
+    if (req.session.userId) {
+      return em.findOne(User, { id: req.session.userId });
+    }
+    return null;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const { username, password } = options;
     const errors: FieldError[] = [];
@@ -101,6 +109,8 @@ export default class UserResolver {
     });
     await em.persistAndFlush(newUser);
 
+    req.session.userId = newUser.id;
+
     return {
       user: newUser,
     };
@@ -109,7 +119,7 @@ export default class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const { username, password } = options;
     const errors: FieldError[] = [];
@@ -138,16 +148,15 @@ export default class UserResolver {
       return { errors };
     }
 
-    const existingUser = await em.findOne(User, {
+    const user = await em.findOne(User, {
       username: username.toLowerCase(),
     });
-    if (!existingUser) {
+    if (!user) {
       errors.push({ field: "username", message: "Username not found" });
       return { errors };
     }
 
-    const isValid = await argon2.verify(existingUser.password, password);
-
+    const isValid = await argon2.verify(user.password, password);
     if (!isValid)
       return {
         errors: [
@@ -158,8 +167,10 @@ export default class UserResolver {
         ],
       };
 
+    req.session.userId = user.id;
+
     return {
-      user: existingUser,
+      user,
     };
   }
 }
