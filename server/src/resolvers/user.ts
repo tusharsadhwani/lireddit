@@ -63,6 +63,14 @@ export default class UserResolver {
     const { username, password } = options;
     const errors: FieldError[] = [];
 
+    if (username.length < 2) {
+      errors.push({
+        field: "username",
+        message: "Username should be at least 2 characters",
+      });
+      return { errors };
+    }
+
     const existingUser = await em.findOne(User, {
       username: username.toLowerCase(),
     });
@@ -105,6 +113,14 @@ export default class UserResolver {
   ): Promise<UserResponse> {
     const { username, password } = options;
     const errors: FieldError[] = [];
+
+    if (username.length < 2) {
+      errors.push({
+        field: "username",
+        message: "Username should be at least 2 characters",
+      });
+      return { errors };
+    }
 
     const existingUser = await em.findOne(User, {
       username: username.toLowerCase(),
