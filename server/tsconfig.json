@@ -11,6 +11,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "skipLibCheck": true,
+    //TODO: "strict": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
