@@ -68,14 +68,6 @@ export default class UserResolver {
         field: "username",
         message: "Username should be at least 2 characters",
       });
-      return { errors };
-    }
-
-    const existingUser = await em.findOne(User, {
-      username: username.toLowerCase(),
-    });
-    if (existingUser) {
-      errors.push({ field: "username", message: "Username already taken" });
     }
     if (!/^\w+$/.test(username)) {
       errors.push({
@@ -91,6 +83,14 @@ export default class UserResolver {
     }
 
     if (errors.length > 0) {
+      return { errors };
+    }
+
+    const existingUser = await em.findOne(User, {
+      username: username.toLowerCase(),
+    });
+    if (existingUser) {
+      errors.push({ field: "username", message: "Username already taken" });
       return { errors };
     }
 
@@ -121,15 +121,6 @@ export default class UserResolver {
       });
       return { errors };
     }
-
-    const existingUser = await em.findOne(User, {
-      username: username.toLowerCase(),
-    });
-    if (!existingUser) {
-      errors.push({ field: "username", message: "Username not found" });
-      return { errors };
-    }
-
     if (!/^\w+$/.test(username)) {
       errors.push({
         field: "username",
@@ -144,6 +135,14 @@ export default class UserResolver {
     }
 
     if (errors.length > 0) {
+      return { errors };
+    }
+
+    const existingUser = await em.findOne(User, {
+      username: username.toLowerCase(),
+    });
+    if (!existingUser) {
+      errors.push({ field: "username", message: "Username not found" });
       return { errors };
     }
 
