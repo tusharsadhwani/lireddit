@@ -41,6 +41,7 @@ const main = async () => {
     debug: !__prod__,
     schema: await buildSchema({
       resolvers: [PostResolver, UserResolver],
+      validate: false,
     }),
     context: ({ req, res }) => {
       return { req, res, em: orm.em };
@@ -48,7 +49,7 @@ const main = async () => {
   });
   apolloServer.applyMiddleware({ app });
 
-  app.listen(4000, () => console.log("Server started on localhost:4000 "));
+  app.listen(4000, () => console.log("Server started on localhost:4000"));
 };
 
 main();
