@@ -16,10 +16,13 @@ import argon2 from "argon2";
 @InputType()
 class UsernamePasswordInput {
   @Field()
-  username: string;
+  email!: string;
 
   @Field()
-  password: string;
+  username!: string;
+
+  @Field()
+  password!: string;
 }
 
 @ObjectType()
@@ -34,10 +37,10 @@ class UserResponse {
 @ObjectType()
 class FieldError {
   @Field(() => String)
-  field: keyof UsernamePasswordInput;
+  field!: keyof UsernamePasswordInput;
 
   @Field()
-  message: string;
+  message!: string;
 }
 
 @Resolver(User)
