@@ -71,7 +71,7 @@ export default class UserResolver {
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const { username, password } = options;
+    const { username, email, password } = options;
     const errors: FieldError[] = [];
 
     if (username.length < 2) {
@@ -86,13 +86,18 @@ export default class UserResolver {
         message: "Username must only contain A-Z, a-z, 0-9 and _",
       });
     }
+    if (!/^[\w\.]+@[\w\.]+$/.test(email)) {
+      errors.push({
+        field: "email",
+        message: "Invalid email",
+      });
+    }
     if (password.length < 6) {
       errors.push({
         field: "password",
         message: "Password must be at least 6 characters",
       });
     }
-
     if (errors.length > 0) {
       return { errors };
     }
@@ -105,9 +110,18 @@ export default class UserResolver {
       return { errors };
     }
 
+    const existingEmail = await em.findOne(User, {
+      email: email.toLowerCase(),
+    });
+    if (existingEmail) {
+      errors.push({ field: "email", message: "Email already in use" });
+      return { errors };
+    }
+
     const hashedPassword = await argon2.hash(password);
     const newUser = em.create(User, {
       username: username.toLowerCase(),
+      email: email.toLowerCase(),
       password: hashedPassword,
     });
     await em.persistAndFlush(newUser);
