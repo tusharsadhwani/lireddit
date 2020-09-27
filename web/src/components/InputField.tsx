@@ -27,6 +27,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         <FormLabel htmlFor={field.name}>{label}</FormLabel>
         <Input
           as={textarea ? "textarea" : "input"}
+          pt={textarea ? 3 : 0}
           height={textarea ? 40 : undefined}
           {...field}
           {...props}
