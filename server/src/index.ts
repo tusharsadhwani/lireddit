@@ -9,12 +9,19 @@ import { __prod__ } from "./constants";
 import mikroConfig from "./mikro-orm.config";
 import PostResolver from "./resolvers/post";
 import UserResolver from "./resolvers/user";
+import cors from "cors";
 
 const main = async () => {
   const orm = await MikroORM.init(mikroConfig);
   orm.getMigrator().up();
 
   const app = express();
+  app.use(
+    cors({
+      credentials: true,
+      origin: "http://localhost:3000",
+    })
+  );
 
   const redisClient = redis.createClient();
   const RedisStore = connectRedis(session);
@@ -33,7 +40,6 @@ const main = async () => {
       },
       saveUninitialized: false,
       secret: "c56800cfj2qm46890v42qmy8qv0-*9)N$MYT&*#%VM5v789wt30",
-      resave: false,
     })
   );
 
@@ -47,7 +53,7 @@ const main = async () => {
       return { req, res, em: orm.em };
     },
   });
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => console.log("Server started on localhost:4000"));
 };
