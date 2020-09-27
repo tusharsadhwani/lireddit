@@ -1,6 +1,12 @@
-import { Box } from "@chakra-ui/core";
+import { Flex, Heading } from "@chakra-ui/core";
 import React from "react";
+import { DarkModeSwitch } from "./DarkModeSwitch";
 
 export const Navbar: React.FC = () => {
-  return <Box height={55}>Content</Box>;
+  return (
+    <Flex px={4} height={55} justify="space-between" align="center">
+      <Heading>Lireddit</Heading>
+      <DarkModeSwitch />
+    </Flex>
+  );
 };
