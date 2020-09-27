@@ -3,47 +3,54 @@ import { Form, Formik } from "formik";
 import React from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
+import { useRegisterMutation } from "../generated/graphql";
+import { mapFormErrors } from "../utils";
 
-const Index = () => (
-  <Layout>
-    <Flex dir="column" justify="center" align="center">
-      <Box w={400}>
-        <Heading>Register</Heading>
-        <Formik
-          initialValues={{ email: "", username: "", password: "" }}
-          onSubmit={async (values, { setErrors }) => {
-            await new Promise((r) => setTimeout(r, 2000));
-          }}
-        >
-          {({ isSubmitting }) => (
-            <Form>
-              <InputField
-                name="username"
-                placeholder="username"
-                label="Username"
-              />
-              <InputField name="email" placeholder="email" label="Email" />
-              <InputField
-                name="password"
-                placeholder="password"
-                label="Password"
-                type="password"
-              />
-              <InputField
-                name="about"
-                placeholder="about"
-                label="About"
-                textarea
-              />
-              <Button mt={4} type="submit" isLoading={isSubmitting}>
-                register
-              </Button>
-            </Form>
-          )}
-        </Formik>
-      </Box>
-    </Flex>
-  </Layout>
-);
+const Register = () => {
+  const [, register] = useRegisterMutation();
 
-export default Index;
+  return (
+    <Layout>
+      <Flex dir="column" justify="center" align="center">
+        <Box w={400}>
+          <Heading>Register</Heading>
+          <Formik
+            initialValues={{ email: "", username: "", password: "" }}
+            onSubmit={async (values, { setErrors }) => {
+              const response = await register(values);
+              if (response.data?.register.errors) {
+                const x = mapFormErrors(response.data?.register.errors);
+                setErrors(x);
+                return;
+              }
+
+              alert("Registered successfully!");
+            }}
+          >
+            {({ isSubmitting }) => (
+              <Form>
+                <InputField
+                  name="username"
+                  placeholder="username"
+                  label="Username"
+                />
+                <InputField name="email" placeholder="email" label="Email" />
+                <InputField
+                  name="password"
+                  placeholder="password"
+                  label="Password"
+                  type="password"
+                />
+                <Button mt={4} type="submit" isLoading={isSubmitting}>
+                  register
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        </Box>
+      </Flex>
+    </Layout>
+  );
+};
+
+export default Register;
