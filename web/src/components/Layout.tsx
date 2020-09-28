@@ -17,7 +17,7 @@ export const Layout: React.FC = ({ children }) => {
   return (
     <Box minH="100vh" bg={bgColor[colorMode]} color={color[colorMode]}>
       <Navbar />
-      {children}
+      <Box p={4}>{children}</Box>
       {/* <Footer /> */}
     </Box>
   );
