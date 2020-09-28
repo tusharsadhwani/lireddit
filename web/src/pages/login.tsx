@@ -4,24 +4,23 @@ import { useRouter } from "next/router";
 import React from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
-import { useRegisterMutation } from "../generated/graphql";
+import { useLoginMutation } from "../generated/graphql";
 import { mapFormErrors } from "../utils";
 
-const Register = () => {
-  const [, register] = useRegisterMutation();
+const Login = () => {
+  const [, login] = useLoginMutation();
   const router = useRouter();
-
   return (
     <Layout>
       <Flex dir="column" justify="center" align="center">
         <Box w={400}>
           <Heading>Register</Heading>
           <Formik
-            initialValues={{ email: "", username: "", password: "" }}
+            initialValues={{ usernameOrEmail: "", password: "" }}
             onSubmit={async (values, { setErrors }) => {
-              const response = await register(values);
-              if (response.data?.register.errors) {
-                const errors = mapFormErrors(response.data?.register.errors);
+              const response = await login(values);
+              if (response.data?.login.errors) {
+                const errors = mapFormErrors(response.data?.login.errors);
                 setErrors(errors);
                 return;
               }
@@ -32,11 +31,10 @@ const Register = () => {
             {({ isSubmitting }) => (
               <Form>
                 <InputField
-                  name="username"
-                  placeholder="username"
-                  label="Username"
+                  name="usernameOrEmail"
+                  placeholder="username/email"
+                  label="Username or Email"
                 />
-                <InputField name="email" placeholder="email" label="Email" />
                 <InputField
                   name="password"
                   placeholder="password"
@@ -44,7 +42,7 @@ const Register = () => {
                   type="password"
                 />
                 <Button mt={4} type="submit" isLoading={isSubmitting}>
-                  register
+                  login
                 </Button>
               </Form>
             )}
@@ -55,4 +53,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
