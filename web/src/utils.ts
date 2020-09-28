@@ -1,6 +1,6 @@
-type FieldErrors = { field: string; message: string }[];
+import { FieldError } from "./generated/graphql";
 
-export const mapFormErrors = (fieldErrors: FieldErrors) => {
+export const mapFormErrors = (fieldErrors: FieldError[]) => {
   const errors: { [key: string]: string } = {};
   fieldErrors.map(({ field, message }) => {
     if (errors[field] === undefined) {
