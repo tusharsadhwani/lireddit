@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Heading } from "@chakra-ui/core";
 import { Form, Formik } from "formik";
+import { useRouter } from "next/router";
 import React from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
@@ -8,6 +9,7 @@ import { mapFormErrors } from "../utils";
 
 const Register = () => {
   const [, register] = useRegisterMutation();
+  const router = useRouter();
 
   return (
     <Layout>
@@ -24,7 +26,7 @@ const Register = () => {
                 return;
               }
 
-              alert("Registered successfully!");
+              router.push("/");
             }}
           >
             {({ isSubmitting }) => (
