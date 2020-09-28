@@ -13,13 +13,24 @@ import { MyContext } from "../types";
 import { User } from "../entities/User";
 import argon2 from "argon2";
 
+const EMAIL_REGEX = /^[\w\.]+@[\w\.]+$/;
+
 @InputType()
-class UsernamePasswordInput {
+class RegisterInput {
   @Field()
   email!: string;
 
   @Field()
   username!: string;
+
+  @Field()
+  password!: string;
+}
+
+@InputType()
+class LoginInput {
+  @Field()
+  usernameOrEmail!: string;
 
   @Field()
   password!: string;
@@ -37,7 +48,7 @@ class UserResponse {
 @ObjectType()
 class FieldError {
   @Field(() => String)
-  field!: keyof UsernamePasswordInput;
+  field!: keyof RegisterInput | keyof LoginInput;
 
   @Field()
   message!: string;
@@ -68,36 +79,33 @@ export default class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: RegisterInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const { username, email, password } = options;
     const errors: FieldError[] = [];
 
-    if (username.length < 2) {
+    if (username.length < 2)
       errors.push({
         field: "username",
         message: "Username should be at least 2 characters",
       });
-    }
-    if (!/^\w+$/.test(username)) {
+    if (!/^\w+$/.test(username))
       errors.push({
         field: "username",
         message: "Username must only contain A-Z, a-z, 0-9 and _",
       });
-    }
-    if (!/^[\w\.]+@[\w\.]+$/.test(email)) {
+    if (!EMAIL_REGEX.test(email))
       errors.push({
         field: "email",
         message: "Invalid email",
       });
-    }
-    if (password.length < 6) {
+    if (password.length < 6)
       errors.push({
         field: "password",
         message: "Password must be at least 6 characters",
       });
-    }
+
     if (errors.length > 0) {
       return { errors };
     }
@@ -135,41 +143,54 @@ export default class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: LoginInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const { username, password } = options;
+    const { usernameOrEmail, password } = options;
     const errors: FieldError[] = [];
 
-    if (username.length < 2) {
-      errors.push({
-        field: "username",
-        message: "Username should be at least 2 characters",
-      });
-      return { errors };
+    const isEmail = usernameOrEmail.includes("@");
+
+    if (isEmail) {
+      const email = usernameOrEmail;
+      if (!EMAIL_REGEX.test(email))
+        errors.push({
+          field: "usernameOrEmail",
+          message: "Invalid email",
+        });
+    } else {
+      const username = usernameOrEmail;
+      if (username.length < 2)
+        errors.push({
+          field: "usernameOrEmail",
+          message: "Username should be at least 2 characters",
+        });
+      if (!/^\w+$/.test(username))
+        errors.push({
+          field: "usernameOrEmail",
+          message: "Username must only contain A-Z, a-z, 0-9 and _",
+        });
     }
-    if (!/^\w+$/.test(username)) {
-      errors.push({
-        field: "username",
-        message: "Username must only contain A-Z, a-z, 0-9 and _",
-      });
-    }
-    if (password.length < 6) {
+
+    if (password.length < 6)
       errors.push({
         field: "password",
         message: "Password must be at least 6 characters",
       });
-    }
 
     if (errors.length > 0) {
       return { errors };
     }
 
-    const user = await em.findOne(User, {
-      username: username.toLowerCase(),
-    });
+    const user = await em.findOne(
+      User,
+      isEmail ? { email: usernameOrEmail } : { username: usernameOrEmail }
+    );
     if (!user) {
-      errors.push({ field: "username", message: "Username not found" });
+      errors.push({
+        field: "usernameOrEmail",
+        message: "Username or email not found",
+      });
       return { errors };
     }
 
