@@ -113,6 +113,11 @@ export type LoginInput = {
   password: Scalars['String'];
 };
 
+export type UserDataFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'username' | 'email'>
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -125,7 +130,7 @@ export type LoginMutation = (
     { __typename?: 'UserResponse' }
     & { user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username' | 'createdAt' | 'updatedAt'>
+      & UserDataFragment
     )>, errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'message'>
@@ -157,7 +162,7 @@ export type RegisterMutation = (
       & Pick<FieldError, 'field' | 'message'>
     )>>, user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & UserDataFragment
     )> }
   ) }
 );
@@ -169,19 +174,22 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
+    & UserDataFragment
   )> }
 );
 
-
+export const UserDataFragmentDoc = gql`
+    fragment UserData on User {
+  id
+  username
+  email
+}
+    `;
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
   login(options: {usernameOrEmail: $usernameOrEmail, password: $password}) {
     user {
-      id
-      username
-      createdAt
-      updatedAt
+      ...UserData
     }
     errors {
       field
@@ -189,7 +197,7 @@ export const LoginDocument = gql`
     }
   }
 }
-    `;
+    ${UserDataFragmentDoc}`;
 
 export function useLoginMutation() {
   return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
@@ -211,12 +219,11 @@ export const RegisterDocument = gql`
       message
     }
     user {
-      id
-      username
+      ...UserData
     }
   }
 }
-    `;
+    ${UserDataFragmentDoc}`;
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
@@ -224,11 +231,10 @@ export function useRegisterMutation() {
 export const MeDocument = gql`
     query me {
   me {
-    id
-    username
+    ...UserData
   }
 }
-    `;
+    ${UserDataFragmentDoc}`;
 
 export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });

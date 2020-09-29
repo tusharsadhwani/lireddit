@@ -7,8 +7,7 @@ mutation register($username: String!, $email: String!, $password: String!) {
       message
     }
     user {
-      id
-      username
+      ...UserData
     }
   }
 }
