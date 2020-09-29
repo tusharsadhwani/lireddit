@@ -1,4 +1,4 @@
-import { FieldError } from "./generated/graphql";
+import { FieldError } from "../generated/graphql";
 
 export const mapFormErrors = (fieldErrors: FieldError[]) => {
   const errors: { [key: string]: string } = {};

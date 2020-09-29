@@ -13,9 +13,12 @@
     "@urql/exchange-graphcache": "^3.1.1",
     "formik": "^2.1.5",
     "graphql": "^15.3.0",
+    "isomorphic-unfetch": "^3.0.0",
     "next": "latest",
+    "next-urql": "^1.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-is": "^16.13.1",
     "urql": "^1.10.1"
   },
   "devDependencies": {
