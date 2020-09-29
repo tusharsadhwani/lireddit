@@ -6,7 +6,7 @@ import { DarkModeSwitch } from "./DarkModeSwitch";
 
 export const Navbar: React.FC = () => {
   const [meQuery] = useMeQuery();
-  const [, logout] = useLogoutMutation();
+  const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   const router = useRouter();
 
   const handleLoginLogoutButton = async () => {
@@ -24,6 +24,7 @@ export const Navbar: React.FC = () => {
       <Button
         mr={4}
         onClick={handleLoginLogoutButton}
+        isLoading={logoutFetching}
         children={meQuery.data?.me ? "Logout" : "Login"}
       />
       <DarkModeSwitch />
