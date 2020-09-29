@@ -13,7 +13,7 @@ export const Navbar: React.FC = () => {
     if (meQuery.data?.me) {
       await logout();
     } else {
-      router.push("login");
+      router.push("/login");
     }
   };
 
