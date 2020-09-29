@@ -2338,11 +2338,19 @@
   dependencies:
     "@types/node" "*"
 
-"@urql/core@^1.12.3":
+"@urql/core@>=1.13.0", "@urql/core@^1.12.3":
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/@urql/core/-/core-1.13.0.tgz#811154b5951b4282dd698a8c9dff4ff3825ca215"
   integrity sha512-g7Kn2a0TDQotOqvGR7bRC+JqviA4TYtiDZH5M9Roszx7LiqZBkViSr5zmdwlNZjR4kSDn+kSXlCV+Ht0Uqls0Q==
   dependencies:
+    wonka "^4.0.14"
+
+"@urql/exchange-graphcache@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@urql/exchange-graphcache/-/exchange-graphcache-3.1.1.tgz#c2298447588c284345de7685b42aab46762a848d"
+  integrity sha512-/Dxvu8dNMNRulzHdlj7c61LeBcvlQCaXInuIk2A2D0WgUALlMCdkRGrABk4+yRow6In9yunzcEd3VxoEQFt9Hw==
+  dependencies:
+    "@urql/core" ">=1.13.0"
     wonka "^4.0.14"
 
 "@webassemblyjs/ast@1.9.0":

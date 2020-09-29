@@ -12,7 +12,6 @@ export const Navbar: React.FC = () => {
   const handleLoginLogoutButton = async () => {
     if (meQuery.data?.me) {
       await logout();
-      location.reload();
     } else {
       router.push("login");
     }
