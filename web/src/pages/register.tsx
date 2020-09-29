@@ -1,5 +1,6 @@
-import { Box, Button, Flex, Heading } from "@chakra-ui/core";
+import { Box, Button, Flex, Heading, Link } from "@chakra-ui/core";
 import { Form, Formik } from "formik";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { InputField } from "../components/InputField";
@@ -43,9 +44,14 @@ const Register = () => {
                   label="Password"
                   type="password"
                 />
-                <Button mt={4} type="submit" isLoading={isSubmitting}>
-                  register
-                </Button>
+                <Flex mt={4} justify="space-between" align="center">
+                  <Button type="submit" isLoading={isSubmitting}>
+                    Register
+                  </Button>
+                  <Link as={NextLink} href="/login">
+                    Login Instead
+                  </Link>
+                </Flex>
               </Form>
             )}
           </Formik>
