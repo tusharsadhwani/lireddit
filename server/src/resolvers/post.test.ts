@@ -32,7 +32,7 @@ describe("check if graphql works", () => {
   const postTitle = "Test post 2";
 
   it("creates a test post using graphql", async () => {
-    const result = await gCall({
+    await gCall({
       source: `
         mutation createPost($title: String!) {
           createPost(title: $title) {
@@ -49,8 +49,6 @@ describe("check if graphql works", () => {
       variableValues: { title: postTitle },
       contextValue: { em: orm.em, req: {} as any, res: {} as any },
     });
-    console.log("data: ", result.data);
-    console.log("errors: ", result.errors);
   });
 
   it("checks if the post persisted", async () => {
