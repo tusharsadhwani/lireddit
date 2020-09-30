@@ -4,15 +4,13 @@ import connectRedis from "connect-redis";
 import express from "express";
 import session from "express-session";
 import redis from "redis";
-import { buildSchema } from "type-graphql";
-import { COOKIE_NAME, __prod__ } from "./constants";
+import { COOKIE_NAME, DB_NAME, __prod__ } from "./constants";
 import mikroConfig from "./mikro-orm.config";
-import PostResolver from "./resolvers/post";
-import UserResolver from "./resolvers/user";
 import cors from "cors";
+import { createSchema } from "./resolvers/graphql-schema";
 
 const main = async () => {
-  const orm = await MikroORM.init(mikroConfig);
+  const orm = await MikroORM.init(mikroConfig(DB_NAME));
   orm.getMigrator().up();
 
   const app = express();
@@ -46,10 +44,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     debug: !__prod__,
-    schema: await buildSchema({
-      resolvers: [PostResolver, UserResolver],
-      validate: false,
-    }),
+    schema: await createSchema(),
     context: ({ req, res }) => {
       return { req, res, em: orm.em };
     },
