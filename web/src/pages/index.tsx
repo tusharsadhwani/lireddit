@@ -13,7 +13,7 @@ const Index = () => {
       <Text>
         {meQuery.data?.me
           ? `Logged in as ${meQuery.data.me.username}`
-          : "logged out"}
+          : "Logged out"}
       </Text>
       <br />
       {postsQuery.data?.posts.map((post) => (

@@ -5,7 +5,8 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "gen": "graphql-codegen --config codegen.yml"
+    "gen": "graphql-codegen --config codegen.yml",
+    "test": "cypress open"
   },
   "dependencies": {
     "@chakra-ui/core": "^1.0.0-rc.3",

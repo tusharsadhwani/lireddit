@@ -46,7 +46,7 @@ const Login = () => {
                 />
                 <Flex mt={4} justify="space-between" align="center">
                   <Button type="submit" isLoading={isSubmitting}>
-                    login
+                    Login
                   </Button>
                   <Link as={NextLink} href="/register">
                     Register Instead
