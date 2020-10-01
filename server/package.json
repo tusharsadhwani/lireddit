@@ -8,9 +8,11 @@
     "dev": "nodemon ./dist",
     "start": "node ./dist",
     "migrate": "mikro-orm migration:create",
-    "test:setup": "ts-node ./src/test-utils/setup.ts",
-    "pretest": "yarn test:setup",
-    "test": "jest"
+    "test:cleanup": "ts-node ./src/test-utils/cleanup.ts",
+    "pretest": "yarn test:cleanup",
+    "test": "jest",
+    "posttest": "yarn test:cleanup",
+    "test:frontend": "cross-env yarn pretest && TESTING=true yarn start"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +22,7 @@
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.1",
     "@types/redis": "^2.8.27",
+    "cross-env": "^7.0.2",
     "jest": "^26.4.2",
     "nodemon": "^2.0.4",
     "ts-jest": "^26.4.1",

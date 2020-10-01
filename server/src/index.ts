@@ -4,13 +4,14 @@ import connectRedis from "connect-redis";
 import express from "express";
 import session from "express-session";
 import redis from "redis";
-import { COOKIE_NAME, DB_NAME, __prod__ } from "./constants";
+import { COOKIE_NAME, DB_NAME, TEST_DB_NAME, __prod__ } from "./constants";
 import mikroConfig from "./mikro-orm.config";
 import cors from "cors";
 import { createSchema } from "./resolvers/graphql-schema";
 
 const main = async () => {
-  const orm = await MikroORM.init(mikroConfig(DB_NAME));
+  const db_name = process.env.TESTING ? TEST_DB_NAME : DB_NAME;
+  const orm = await MikroORM.init(mikroConfig(db_name));
   orm.getMigrator().up();
 
   const app = express();
