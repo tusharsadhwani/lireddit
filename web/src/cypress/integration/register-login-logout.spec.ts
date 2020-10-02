@@ -8,9 +8,9 @@ export const test = () => {
       cy.contains("Register Instead").click();
       cy.url().should("include", "/register");
 
-      cy.get("input#username").click().type("tushar");
-      cy.get("input#email").click().type("tushar@gmail.com");
-      cy.get("input#password").click().type("tushar");
+      cy.get("#username").click().type("tushar");
+      cy.get("#email").click().type("tushar@gmail.com");
+      cy.get("#password").click().type("tushar");
       cy.get("form").contains("Register").click();
 
       cy.url().should("not.include", "/register");
@@ -28,8 +28,8 @@ export const test = () => {
       cy.contains("Login").click();
       cy.url().should("include", "/login");
 
-      cy.get("input#usernameOrEmail").click().type("tushar");
-      cy.get("input#password").click().type("tushar");
+      cy.get("#usernameOrEmail").click().type("tushar");
+      cy.get("#password").click().type("tushar");
       cy.get("form").contains("Login").click();
 
       cy.url().should("not.include", "/login");
