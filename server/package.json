@@ -11,8 +11,7 @@
     "test:cleanup": "ts-node ./src/test-utils/cleanup.ts",
     "pretest": "yarn test:cleanup",
     "test": "jest",
-    "posttest": "yarn test:cleanup",
-    "test:frontend": "cross-env yarn pretest && TESTING=true yarn start"
+    "test:frontend": "yarn pretest && cross-env TESTING=true yarn start"
   },
   "author": "",
   "license": "ISC",
