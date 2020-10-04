@@ -2,15 +2,16 @@ import { Box, Button, Flex, Heading } from "@chakra-ui/core";
 import { useRouter } from "next/router";
 import React from "react";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
+import { isServer } from "../utils/isServer";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 
 export const Navbar: React.FC = () => {
-  const [meQuery] = useMeQuery();
+  const [{ data: meData }] = useMeQuery({ pause: isServer() });
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   const router = useRouter();
 
   const handleLoginLogoutButton = async () => {
-    if (meQuery.data?.me) {
+    if (meData?.me) {
       await logout();
     } else {
       router.push("/login");
@@ -25,7 +26,7 @@ export const Navbar: React.FC = () => {
         mr={4}
         onClick={handleLoginLogoutButton}
         isLoading={logoutFetching}
-        children={meQuery.data?.me ? "Logout" : "Login"}
+        children={meData?.me ? "Logout" : "Login"}
       />
       <DarkModeSwitch />
     </Flex>
