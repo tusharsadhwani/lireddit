@@ -35,6 +35,11 @@ export const test = () => {
       cy.url().should("not.include", "/login");
       cy.get("body").should("contain.text", "Logged in");
     });
+
+    it("check for refresh persistence", () => {
+      cy.reload();
+      cy.get("body").should("contain.text", "Logged in");
+    });
   });
 };
 
