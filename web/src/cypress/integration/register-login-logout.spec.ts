@@ -1,3 +1,7 @@
+Cypress.Cookies.defaults({
+  preserve: "lireddit-id",
+});
+
 export const test = () => {
   describe("Test register, logout and login", () => {
     it("Register account", () => {
