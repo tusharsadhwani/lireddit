@@ -8,6 +8,7 @@ import {
   MeQuery,
   RegisterMutation,
 } from "../generated/graphql";
+import { isServer } from "./isServer";
 
 export function betterUpdateQuery<Result, Query>(
   cache: Cache,
@@ -18,62 +19,70 @@ export function betterUpdateQuery<Result, Query>(
   return cache.updateQuery(qi, (data) => fn(result, data as any) as any);
 }
 
-const createUrqlClient = (ssrExchange: SSRExchange) => ({
-  url: "http://localhost:4000/graphql",
-  fetchOptions: {
-    credentials: "include",
-  } as const,
-  exchanges: [
-    dedupExchange,
-    cacheExchange({
-      updates: {
-        Mutation: {
-          login: (_result, _, cache, __) => {
-            betterUpdateQuery<LoginMutation, MeQuery>(
-              cache,
-              { query: MeDocument },
-              _result,
-              (result, query) => {
-                if (result.login.errors) {
-                  return query;
-                } else {
-                  return {
-                    me: result.login.user,
-                  };
+const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
+  let cookie = "";
+  if (isServer()) {
+    cookie = ctx?.req?.headers?.cookie;
+  }
+
+  return {
+    url: "http://localhost:4000/graphql",
+    fetchOptions: {
+      credentials: "include",
+      headers: cookie ? { cookie } : undefined,
+    } as const,
+    exchanges: [
+      dedupExchange,
+      cacheExchange({
+        updates: {
+          Mutation: {
+            login: (_result, _, cache, __) => {
+              betterUpdateQuery<LoginMutation, MeQuery>(
+                cache,
+                { query: MeDocument },
+                _result,
+                (result, query) => {
+                  if (result.login.errors) {
+                    return query;
+                  } else {
+                    return {
+                      me: result.login.user,
+                    };
+                  }
                 }
-              }
-            );
-          },
-          register: (_result, _, cache, __) => {
-            betterUpdateQuery<RegisterMutation, MeQuery>(
-              cache,
-              { query: MeDocument },
-              _result,
-              (result, query) => {
-                if (result.register.errors) {
-                  return query;
-                } else {
-                  return {
-                    me: result.register.user,
-                  };
+              );
+            },
+            register: (_result, _, cache, __) => {
+              betterUpdateQuery<RegisterMutation, MeQuery>(
+                cache,
+                { query: MeDocument },
+                _result,
+                (result, query) => {
+                  if (result.register.errors) {
+                    return query;
+                  } else {
+                    return {
+                      me: result.register.user,
+                    };
+                  }
                 }
-              }
-            );
-          },
-          logout: (_result, _, cache, __) => {
-            betterUpdateQuery<LogoutMutation, MeQuery>(
-              cache,
-              { query: MeDocument },
-              _result,
-              () => ({ me: null })
-            );
+              );
+            },
+            logout: (_result, _, cache, __) => {
+              betterUpdateQuery<LogoutMutation, MeQuery>(
+                cache,
+                { query: MeDocument },
+                _result,
+                () => ({ me: null })
+              );
+            },
           },
         },
-      },
-    }),
-    ssrExchange,
-    fetchExchange,
-  ],
-});
+      }),
+      ssrExchange,
+      fetchExchange,
+    ],
+  };
+};
 
 export default createUrqlClient;
