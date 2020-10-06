@@ -1,11 +1,12 @@
 import { Box, Button, Flex, Heading } from "@chakra-ui/core";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React from "react";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 
-export const Navbar: React.FC = () => {
+const _Navbar: React.FC = () => {
   const [{ data: meData }] = useMeQuery({ pause: isServer() });
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   const router = useRouter();
@@ -34,3 +35,5 @@ export const Navbar: React.FC = () => {
 };
 
 const Spacer: React.FC = () => <Box flexGrow={1} />;
+
+export const Navbar = dynamic(async () => _Navbar, { ssr: false });
