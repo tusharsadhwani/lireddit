@@ -1,8 +1,8 @@
 import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
+import faker from "faker";
 import { Post } from "../entities/Post";
 import { gCall } from "../test-utils/gCall";
 import { testConnection } from "../test-utils/testConnection";
-import faker from "faker";
 
 let orm: MikroORM<IDatabaseDriver<Connection>>;
 
