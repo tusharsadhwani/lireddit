@@ -15,7 +15,7 @@ import { User } from "../entities/User";
 import { MyContext } from "../types";
 
 const EMAIL_REGEX = /^[\w\.]+@[\w\.]+$/;
-
+const USERNAME_REGEX = /^[\w\.]+$/;
 @InputType()
 class RegisterInput {
   @Field()
@@ -91,7 +91,7 @@ export default class UserResolver {
         field: "username",
         message: "Username should be at least 2 characters",
       });
-    if (!/^\w+$/.test(username))
+    if (!USERNAME_REGEX.test(username))
       errors.push({
         field: "username",
         message: "Username must only contain A-Z, a-z, 0-9 and _",
@@ -166,7 +166,7 @@ export default class UserResolver {
           field: "usernameOrEmail",
           message: "Username should be at least 2 characters",
         });
-      if (!/^\w+$/.test(username))
+      if (!USERNAME_REGEX.test(username))
         errors.push({
           field: "usernameOrEmail",
           message: "Username must only contain A-Z, a-z, 0-9 and _",
@@ -185,7 +185,9 @@ export default class UserResolver {
 
     const user = await em.findOne(
       User,
-      isEmail ? { email: usernameOrEmail } : { username: usernameOrEmail }
+      isEmail
+        ? { email: usernameOrEmail.toLowerCase() }
+        : { username: usernameOrEmail.toLowerCase() }
     );
     if (!user) {
       errors.push({
