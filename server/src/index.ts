@@ -7,19 +7,11 @@ import { COOKIE_NAME, DB_NAME, TEST_DB_NAME, __prod__ } from "./constants";
 import cors from "cors";
 import { createSchema } from "./resolvers/graphql-schema";
 import { createConnection } from "typeorm";
-import { User } from "./entities/User";
-import { Post } from "./entities/Post";
+import { typeormConfig } from "./typeorm.config";
 
 const main = async () => {
-  const db_name = process.env.TESTING ? TEST_DB_NAME : DB_NAME;
-  await createConnection({
-    type: "postgres",
-    database: db_name,
-    username: "postgres",
-    password: "password",
-    synchronize: true,
-    entities: [User, Post],
-  });
+  const dbName = process.env.TESTING ? TEST_DB_NAME : DB_NAME;
+  await createConnection(typeormConfig(dbName));
 
   const app = express();
   app.use(

@@ -1,6 +1,6 @@
 import { graphql, GraphQLSchema } from "graphql";
 import { Maybe } from "graphql/jsutils/Maybe";
-import { MyContext } from "src/types";
+import { MyContext } from "../types";
 import { createSchema } from "../resolvers/graphql-schema";
 
 interface Options {
