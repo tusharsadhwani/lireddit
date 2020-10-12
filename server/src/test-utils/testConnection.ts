@@ -1,15 +1,17 @@
-import { MikroORM } from "@mikro-orm/core";
+import { Post } from "../entities/Post";
+import { User } from "../entities/User";
+import { createConnection } from "typeorm";
 import { TEST_DB_NAME } from "../constants";
-import mikroConfig from "../mikro-orm.config";
 
 export const testConnection = async (reset: boolean = false) => {
-  const orm = await MikroORM.init(mikroConfig(TEST_DB_NAME));
-
-  if (reset) {
-    const schemaGenerator = orm.getSchemaGenerator();
-    await schemaGenerator.dropSchema();
-    await schemaGenerator.createSchema();
-  }
-
-  return orm;
+  const conn = await createConnection({
+    type: "postgres",
+    database: TEST_DB_NAME,
+    username: "postgres",
+    password: "password",
+    synchronize: true,
+    dropSchema: reset,
+    entities: [User, Post],
+  });
+  return conn;
 };

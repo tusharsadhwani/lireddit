@@ -1,17 +1,17 @@
-import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
 import faker from "faker";
+import { Connection } from "typeorm";
 import { User } from "../entities/User";
 import { gCall } from "../test-utils/gCall";
 import { testConnection } from "../test-utils/testConnection";
 
-let orm: MikroORM<IDatabaseDriver<Connection>>;
+let conn: Connection;
 
 beforeAll(async () => {
-  orm = await testConnection();
+  conn = await testConnection();
 });
 
 afterAll(async () => {
-  await orm.close();
+  await conn.close();
 });
 
 describe("ORM tests", () => {
@@ -21,10 +21,9 @@ describe("ORM tests", () => {
       email: faker.internet.email().toLowerCase(),
       password: faker.internet.password(),
     };
-    const post = orm.em.create(User, fakeUser);
-    await orm.em.persistAndFlush(post);
+    await User.create(fakeUser).save();
 
-    const fetchedUser = await orm.em.findOneOrFail(User, {
+    const fetchedUser = await User.findOneOrFail({
       email: fakeUser.email,
     });
     expect(fetchedUser.username).toEqual(fakeUser.username);
@@ -57,13 +56,13 @@ describe("GraphQL tests", () => {
       }
       `,
       variableValues: fakeUser,
-      contextValue: { em: orm.em, req: { session: {} } as any, res: {} as any },
+      contextValue: { req: { session: {} } as any, res: {} as any },
     });
     expect(gqlResponse.data?.register.user.username).toEqual(
       fakeUser.username.toLowerCase()
     );
 
-    const fetchedUser = await orm.em.findOneOrFail(User, {
+    const fetchedUser = await User.findOneOrFail({
       email: fakeUser.email.toLowerCase(),
     });
     expect(fetchedUser.username).toEqual(fakeUser.username.toLowerCase());
@@ -86,7 +85,7 @@ describe("GraphQL tests", () => {
       }      
       `,
       variableValues: { ...fakeUser, usernameOrEmail: fakeUser.username },
-      contextValue: { em: orm.em, req: { session: {} } as any, res: {} as any },
+      contextValue: { req: { session: {} } as any, res: {} as any },
     });
     expect(gqlResponse.data?.login.user.username).toEqual(
       fakeUser.username.toLowerCase()
@@ -110,7 +109,7 @@ describe("GraphQL tests", () => {
       }      
       `,
       variableValues: { ...fakeUser, usernameOrEmail: fakeUser.email },
-      contextValue: { em: orm.em, req: { session: {} } as any, res: {} as any },
+      contextValue: { req: { session: {} } as any, res: {} as any },
     });
     expect(gqlResponse.data?.login.user.username).toEqual(
       fakeUser.username.toLowerCase()

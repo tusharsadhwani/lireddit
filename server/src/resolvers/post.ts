@@ -1,6 +1,5 @@
 import {
   Arg,
-  Ctx,
   Field,
   Int,
   Mutation,
@@ -9,7 +8,6 @@ import {
   Resolver,
 } from "type-graphql";
 import { Post } from "../entities/Post";
-import { MyContext } from "../types";
 
 @ObjectType()
 class PostResponse {
@@ -23,60 +21,47 @@ class PostResponse {
 @Resolver(Post)
 export default class PostResolver {
   @Query(() => [Post])
-  posts(@Ctx() { em }: MyContext): Promise<Post[]> {
-    return em.find(Post, {});
+  posts(): Promise<Post[]> {
+    return Post.find();
   }
 
   @Query(() => Post, { nullable: true })
-  post(
-    @Arg("id", () => Int) id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<Post | null> {
-    return em.findOne(Post, { id });
+  post(@Arg("id", () => Int) id: number): Promise<Post | undefined> {
+    return Post.findOne(id);
   }
 
   @Mutation(() => PostResponse)
   async createPost(
-    @Arg("title", () => String) title: string,
-    @Ctx() { em }: MyContext
+    @Arg("title", () => String) title: string
   ): Promise<PostResponse> {
     if (!title) {
       return { error: "Title cannot be empty" };
     }
-    const newPost = em.create(Post, { title });
-    await em.persistAndFlush(newPost);
+    const newPost = await Post.create({ title }).save();
     return { post: newPost };
   }
 
   @Mutation(() => PostResponse)
   async updatePost(
     @Arg("id", () => Int) id: number,
-    @Arg("title", () => String) title: string,
-    @Ctx() { em }: MyContext
+    @Arg("title", () => String) title: string
   ): Promise<PostResponse> {
-    const post = await em.findOne(Post, { id });
-    if (!post) return { error: "Post not found" };
-
     if (!title) return { error: "Title must not be empty" };
 
+    const post = await Post.findOne(id);
+    if (!post) return { error: "Post not found" };
+
     post.title = title;
-    await em.persistAndFlush(post);
+    await post.save();
     return { post };
   }
 
   @Mutation(() => Boolean)
-  async deletePost(
-    @Arg("id", () => Int) id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<boolean> {
-    const post = await em.findOne(Post, { id });
-    console.log(post);
-
+  async deletePost(@Arg("id", () => Int) id: number): Promise<boolean> {
+    const post = await Post.findOne(id);
     if (!post) return false;
 
-    await em.nativeDelete(Post, { id });
-    //TODO: The post doesn't show up in searches anymore, but it can still be
-    // edited or found by ID
+    await post.remove();
     return true;
   }
 }

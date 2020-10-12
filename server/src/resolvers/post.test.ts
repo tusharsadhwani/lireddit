@@ -1,28 +1,27 @@
-import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
 import faker from "faker";
+import { Connection } from "typeorm";
 import { Post } from "../entities/Post";
 import { gCall } from "../test-utils/gCall";
 import { testConnection } from "../test-utils/testConnection";
 
-let orm: MikroORM<IDatabaseDriver<Connection>>;
+let conn: Connection;
 
 beforeAll(async () => {
-  orm = await testConnection();
+  conn = await testConnection();
 });
 
 afterAll(async () => {
-  await orm.close();
+  await conn.close();
 });
 
 describe("check if database works", () => {
   const postTitle = faker.lorem.sentence();
 
   it("creates and checks a test post", async () => {
-    const post = orm.em.create(Post, { title: postTitle });
+    const post = await Post.create({ title: postTitle }).save();
     expect(post.title).toEqual(postTitle);
-    await orm.em.persistAndFlush(post);
 
-    const fetchedPost = await orm.em.findOne(Post, { title: postTitle });
+    const fetchedPost = await Post.findOne({ title: postTitle });
     expect(fetchedPost?.title).toEqual(postTitle);
   });
 });
@@ -47,10 +46,10 @@ describe("check if graphql works", () => {
         }
       `,
       variableValues: { title: postTitle },
-      contextValue: { em: orm.em, req: {} as any, res: {} as any },
+      contextValue: { req: {} as any, res: {} as any },
     });
 
-    const fetchedPost = await orm.em.findOne(Post, { title: postTitle });
+    const fetchedPost = await Post.findOne({ title: postTitle });
     expect(fetchedPost?.title).toEqual(postTitle);
     postId = fetchedPost?.id;
   });
@@ -68,7 +67,7 @@ describe("check if graphql works", () => {
         }
       `,
       variableValues: {},
-      contextValue: { em: orm.em, req: {} as any, res: {} as any },
+      contextValue: { req: {} as any, res: {} as any },
     });
 
     expect(
@@ -94,13 +93,13 @@ describe("check if graphql works", () => {
         }
       `,
       variableValues: { id: postId, title: updatedPostTitle },
-      contextValue: { em: orm.em, req: {} as any, res: {} as any },
+      contextValue: { req: {} as any, res: {} as any },
     });
 
     expect((gqlResponse.data?.updatePost.post as Post).title).toEqual(
       updatedPostTitle
     );
-    const fetchedPost = await orm.em.findOne(Post, { id: postId });
+    const fetchedPost = await Post.findOne(postId);
     expect(fetchedPost?.title).toEqual(updatedPostTitle);
   });
 
@@ -112,12 +111,14 @@ describe("check if graphql works", () => {
         }
       `,
       variableValues: { id: postId },
-      contextValue: { em: orm.em, req: {} as any, res: {} as any },
+      contextValue: { req: {} as any, res: {} as any },
     });
 
     expect(gqlResponse.data?.deletePost).toEqual(true);
 
-    const fetchedPost = await orm.em.findOne(Post, { title: updatedPostTitle });
-    expect(fetchedPost).toBeNull();
+    const fetchedPost = await Post.findOne({
+      title: updatedPostTitle,
+    });
+    expect(fetchedPost).toBeUndefined();
   });
 });

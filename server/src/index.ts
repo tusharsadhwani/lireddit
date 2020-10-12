@@ -1,18 +1,25 @@
-import { MikroORM } from "@mikro-orm/core";
 import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import express from "express";
 import session from "express-session";
 import redis from "redis";
 import { COOKIE_NAME, DB_NAME, TEST_DB_NAME, __prod__ } from "./constants";
-import mikroConfig from "./mikro-orm.config";
 import cors from "cors";
 import { createSchema } from "./resolvers/graphql-schema";
+import { createConnection } from "typeorm";
+import { User } from "./entities/User";
+import { Post } from "./entities/Post";
 
 const main = async () => {
   const db_name = process.env.TESTING ? TEST_DB_NAME : DB_NAME;
-  const orm = await MikroORM.init(mikroConfig(db_name));
-  orm.getMigrator().up();
+  await createConnection({
+    type: "postgres",
+    database: db_name,
+    username: "postgres",
+    password: "password",
+    synchronize: true,
+    entities: [User, Post],
+  });
 
   const app = express();
   app.use(
@@ -47,7 +54,7 @@ const main = async () => {
     debug: !__prod__,
     schema: await createSchema(),
     context: ({ req, res }) => {
-      return { req, res, em: orm.em };
+      return { req, res };
     },
   });
   apolloServer.applyMiddleware({ app, cors: false });

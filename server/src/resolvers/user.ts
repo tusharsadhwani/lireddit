@@ -58,30 +58,27 @@ class FieldError {
 @Resolver(User)
 export default class UserResolver {
   @Query(() => [User])
-  users(@Ctx() { em }: MyContext): Promise<User[]> {
-    return em.find(User, {});
+  users(): Promise<User[]> {
+    return User.find();
   }
 
   @Query(() => User, { nullable: true })
-  user(
-    @Arg("id", () => Int) id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<User | null> {
-    return em.findOne(User, { id });
+  user(@Arg("id", () => Int) id: number): Promise<User | undefined> {
+    return User.findOne(id);
   }
 
   @Query(() => User, { nullable: true })
-  async me(@Ctx() { em, req }: MyContext): Promise<User | null> {
+  async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
     if (req.session.userId) {
-      return em.findOne(User, { id: req.session.userId });
+      return User.findOne(req.session.userId);
     }
-    return null;
+    return undefined;
   }
 
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: RegisterInput,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const { username, email, password } = options;
     const errors: FieldError[] = [];
@@ -111,7 +108,7 @@ export default class UserResolver {
       return { errors };
     }
 
-    const existingUser = await em.findOne(User, {
+    const existingUser = await User.findOne({
       username: username.toLowerCase(),
     });
     if (existingUser) {
@@ -119,7 +116,7 @@ export default class UserResolver {
       return { errors };
     }
 
-    const existingEmail = await em.findOne(User, {
+    const existingEmail = await User.findOne({
       email: email.toLowerCase(),
     });
     if (existingEmail) {
@@ -128,12 +125,11 @@ export default class UserResolver {
     }
 
     const hashedPassword = await argon2.hash(password);
-    const newUser = em.create(User, {
+    const newUser = await User.create({
       username: username.toLowerCase(),
       email: email.toLowerCase(),
       password: hashedPassword,
-    });
-    await em.persistAndFlush(newUser);
+    }).save();
 
     req.session.userId = newUser.id;
 
@@ -145,7 +141,7 @@ export default class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg("options") options: LoginInput,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const { usernameOrEmail, password } = options;
     const errors: FieldError[] = [];
@@ -183,8 +179,7 @@ export default class UserResolver {
       return { errors };
     }
 
-    const user = await em.findOne(
-      User,
+    const user = await User.findOne(
       isEmail
         ? { email: usernameOrEmail.toLowerCase() }
         : { username: usernameOrEmail.toLowerCase() }
