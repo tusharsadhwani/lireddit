@@ -1,6 +1,7 @@
 import faker from "faker";
 import { Connection } from "typeorm";
 import { Post } from "../entities/Post";
+import { User } from "../entities/User";
 import { gCall } from "../test-utils/gCall";
 import { testConnection } from "../test-utils/testConnection";
 
@@ -14,47 +15,68 @@ afterAll(async () => {
   await conn.close();
 });
 
-describe("check if database works", () => {
+describe("GraphQL tests", () => {
   const postTitle = faker.lorem.sentence();
 
-  it("creates and checks a test post", async () => {
-    const post = await Post.create({ title: postTitle }).save();
-    expect(post.title).toEqual(postTitle);
+  const fakeUser = {
+    username: faker.internet.userName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  };
+  let userId: number | undefined;
 
-    const fetchedPost = await Post.findOne({ title: postTitle });
-    expect(fetchedPost?.title).toEqual(postTitle);
+  test("register and login", async () => {
+    const gqlResponse = await gCall({
+      source: `
+      mutation register($username: String!, $email: String!, $password: String!) {
+        register(
+          options: { username: $username, email: $email, password: $password }
+        ) {
+          errors {
+            field
+            message
+          }
+          user {
+            id
+            username
+            email
+          }
+        }
+      }
+      `,
+      variableValues: fakeUser,
+      contextValue: { req: { session: {} } as any, res: {} as any },
+    });
+    const user = gqlResponse.data?.register.user as User;
+    expect(user.username).toEqual(fakeUser.username.toLowerCase());
+    userId = user.id;
   });
-});
-
-describe("check if graphql works", () => {
-  const postTitle = faker.lorem.sentence();
 
   let postId: number | undefined;
 
-  it("create post and check using orm", async () => {
-    await gCall({
+  test("create post and check using orm", async () => {
+    const gqlResponse = await gCall({
       source: `
         mutation createPost($title: String!) {
           createPost(title: $title) {
-            post {
-              id
-              title
-              createdAt
-              updatedAt
-            }
+            id
+            title
+            createdAt
+            updatedAt
           }
         }
       `,
       variableValues: { title: postTitle },
-      contextValue: { req: {} as any, res: {} as any },
+      contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
+    expect(gqlResponse.errors).toBeUndefined();
 
     const fetchedPost = await Post.findOne({ title: postTitle });
     expect(fetchedPost?.title).toEqual(postTitle);
     postId = fetchedPost?.id;
   });
 
-  it("fetch posts and check new post is fetched", async () => {
+  test("fetch posts and check if new post is fetched", async () => {
     const gqlResponse = await gCall({
       source: `
         query posts {
@@ -63,48 +85,87 @@ describe("check if graphql works", () => {
             title
             createdAt
             updatedAt
+            creator {
+              id
+              username
+            }
           }
         }
       `,
       variableValues: {},
       contextValue: { req: {} as any, res: {} as any },
     });
+    expect(gqlResponse.errors).toBeUndefined();
 
-    expect(
-      (gqlResponse.data?.posts as Post[])
-        .map((post) => post.title)
-        .includes(postTitle)
-    );
+    const posts = gqlResponse.data?.posts as Post[];
+    const post = posts.find((post) => post.title === postTitle);
+    expect(post).toBeDefined();
+    expect(post?.creator.id).toEqual(userId);
   });
 
   const updatedPostTitle = faker.lorem.sentence();
-  it("update post", async () => {
+  test("update post", async () => {
     const gqlResponse = await gCall({
       source: `
         mutation updatePost($id: Int!, $title: String!) {
           updatePost(id: $id, title: $title) {
-            post {
-              id
-              title
-              createdAt
-              updatedAt
-            }
+            id
+            title
+            createdAt
+            updatedAt
           }
         }
       `,
       variableValues: { id: postId, title: updatedPostTitle },
-      contextValue: { req: {} as any, res: {} as any },
+      contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
+    expect(gqlResponse.errors).toBeUndefined();
 
-    expect((gqlResponse.data?.updatePost.post as Post).title).toEqual(
+    expect((gqlResponse.data?.updatePost as Post).title).toEqual(
       updatedPostTitle
     );
     const fetchedPost = await Post.findOne(postId);
     expect(fetchedPost?.title).toEqual(updatedPostTitle);
   });
 
-  it("delete post", async () => {
-    const gqlResponse = await gCall({
+  const newPostTitle = faker.lorem.sentence();
+  test("Errors in updating or deleting when logged out", async () => {
+    let gqlResponse = await gCall({
+      source: `
+        mutation createPost($title: String!) {
+          createPost(title: $title) {
+            id
+            title
+            createdAt
+            updatedAt
+          }
+        }
+      `,
+      variableValues: { title: newPostTitle },
+      contextValue: { req: {} as any, res: {} as any },
+    });
+    expect(gqlResponse.data).toBeFalsy();
+    expect(gqlResponse.errors).toBeDefined();
+
+    gqlResponse = await gCall({
+      source: `
+        mutation updatePost($id: Int!, $title: String!) {
+          updatePost(id: $id, title: $title) {
+            id
+            title
+            createdAt
+            updatedAt
+          }
+        }
+      `,
+      variableValues: { id: postId, title: newPostTitle },
+      contextValue: { req: { session: {} } as any, res: {} as any },
+    });
+    expect(gqlResponse.data).toBeFalsy();
+    expect(gqlResponse.errors).toBeDefined();
+    console.log(gqlResponse);
+
+    gqlResponse = await gCall({
       source: `
         mutation deletePost($id: Int!) {
           deletePost(id: $id)
@@ -113,7 +174,101 @@ describe("check if graphql works", () => {
       variableValues: { id: postId },
       contextValue: { req: {} as any, res: {} as any },
     });
+    expect(gqlResponse.data).toBeFalsy();
+    expect(gqlResponse.errors).toBeDefined();
+  });
 
+  test("Errors in updating or deleting when not your post", async () => {
+    const fakeUser = {
+      username: faker.internet.userName(),
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    };
+    let userId: number | undefined;
+
+    let gqlResponse = await gCall({
+      source: `
+        mutation register($username: String!, $email: String!, $password: String!) {
+          register(
+            options: { username: $username, email: $email, password: $password }
+          ) {
+            errors {
+              field
+              message
+            }
+            user {
+              id
+              username
+              email
+            }
+          }
+        }
+        `,
+      variableValues: fakeUser,
+      contextValue: { req: { session: {} } as any, res: {} as any },
+    });
+    const user = gqlResponse.data?.register.user as User;
+    expect(user.username).toEqual(fakeUser.username.toLowerCase());
+    userId = user.id;
+
+    gqlResponse = await gCall({
+      source: `
+        mutation createPost($title: String!) {
+          createPost(title: $title) {
+            id
+            title
+            createdAt
+            updatedAt
+          }
+        }
+      `,
+      variableValues: { title: newPostTitle },
+      contextValue: { req: { session: {} } as any, res: {} as any },
+    });
+    expect(gqlResponse.data).toBeFalsy();
+    expect(gqlResponse.errors).toBeDefined();
+
+    gqlResponse = await gCall({
+      source: `
+        mutation updatePost($id: Int!, $title: String!) {
+          updatePost(id: $id, title: $title) {
+            id
+            title
+            createdAt
+            updatedAt
+          }
+        }
+      `,
+      variableValues: { id: postId, title: newPostTitle },
+      contextValue: { req: { session: { userId } } as any, res: {} as any },
+    });
+    expect(gqlResponse.data).toBeFalsy();
+    expect(gqlResponse.errors).toBeDefined();
+
+    gqlResponse = await gCall({
+      source: `
+        mutation deletePost($id: Int!) {
+          deletePost(id: $id)
+        }
+      `,
+      variableValues: { id: postId },
+      contextValue: { req: { session: { userId } } as any, res: {} as any },
+    });
+    expect(gqlResponse.data).toBeFalsy();
+    expect(gqlResponse.errors).toBeDefined();
+  });
+
+  test("delete post", async () => {
+    const gqlResponse = await gCall({
+      source: `
+        mutation deletePost($id: Int!) {
+          deletePost(id: $id)
+        }
+      `,
+      variableValues: { id: postId },
+      contextValue: { req: { session: { userId } } as any, res: {} as any },
+    });
+    expect(gqlResponse.errors).toBeUndefined();
     expect(gqlResponse.data?.deletePost).toEqual(true);
 
     const fetchedPost = await Post.findOne({

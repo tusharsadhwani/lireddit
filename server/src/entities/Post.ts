@@ -1,12 +1,14 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ID, Int, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User";
 
 @Entity()
 @ObjectType()
@@ -18,6 +20,14 @@ export class Post extends BaseEntity {
   @Column()
   @Field()
   title!: string;
+
+  @Column()
+  @Field(() => Int)
+  creatorId!: number;
+
+  @ManyToOne(() => User, (creator) => creator.posts)
+  @Field(() => User)
+  creator!: User;
 
   @CreateDateColumn()
   @Field(() => String)

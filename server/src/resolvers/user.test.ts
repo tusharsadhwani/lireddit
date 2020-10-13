@@ -15,7 +15,7 @@ afterAll(async () => {
 });
 
 describe("ORM tests", () => {
-  it("create and checks a test user", async () => {
+  test("create and checks a test user", async () => {
     const fakeUser = {
       username: faker.internet.userName().toLowerCase(),
       email: faker.internet.email().toLowerCase(),
@@ -37,7 +37,7 @@ describe("GraphQL tests", () => {
     password: faker.internet.password(),
   };
 
-  it("create and check a test user using graphql", async () => {
+  test("create and check a test user using graphql", async () => {
     const gqlResponse = await gCall({
       source: `
       mutation register($username: String!, $email: String!, $password: String!) {
@@ -68,7 +68,7 @@ describe("GraphQL tests", () => {
     expect(fetchedUser.username).toEqual(fakeUser.username.toLowerCase());
   });
 
-  it("try login via username", async () => {
+  test("try login via username", async () => {
     const gqlResponse = await gCall({
       source: `
       mutation login($usernameOrEmail: String!, $password: String!) {
@@ -92,7 +92,7 @@ describe("GraphQL tests", () => {
     );
   });
 
-  it("try login via email", async () => {
+  test("try login via email", async () => {
     const gqlResponse = await gCall({
       source: `
       mutation login($usernameOrEmail: String!, $password: String!) {

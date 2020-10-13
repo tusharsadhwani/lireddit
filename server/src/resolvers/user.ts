@@ -131,7 +131,7 @@ export default class UserResolver {
       password: hashedPassword,
     }).save();
 
-    req.session.userId = newUser.id;
+    req.session.userId = newUser.id.toString();
 
     return {
       user: newUser,
@@ -203,7 +203,7 @@ export default class UserResolver {
         ],
       };
 
-    req.session.userId = user.id;
+    req.session.userId = user.id.toString();
 
     return {
       user,
