@@ -32,14 +32,19 @@ export default class PostResolver {
   @Mutation(() => Post)
   async createPost(
     @Arg("title", () => String) title: string,
+    @Arg("content", () => String) content: string,
     @Ctx() { req }: MyContext
   ): Promise<Post> {
     if (!req.session.userId) throw new Error("Not Logged in");
-    if (!title) {
-      throw new Error("Title cannot be empty");
-    }
+
+    title = title.trim();
+    content = content.trim();
+    if (!title) throw new Error("Title cannot be empty");
+    if (!content) throw new Error("Content cannot be empty");
+
     return Post.create({
       title,
+      content,
       creatorId: parseInt(req.session.userId),
     }).save();
   }
@@ -48,10 +53,15 @@ export default class PostResolver {
   async updatePost(
     @Arg("id", () => Int) id: number,
     @Arg("title", () => String) title: string,
+    @Arg("content", () => String) content: string,
     @Ctx() { req }: MyContext
   ): Promise<Post> {
     if (!req.session.userId) throw new Error("Not Logged in");
-    if (!title) throw new Error("Title must not be empty");
+
+    title = title.trim();
+    content = content.trim();
+    if (!title) throw new Error("Title cannot be empty");
+    if (!content) throw new Error("Content cannot be empty");
 
     const post = await Post.findOne(id);
     if (!post) throw new Error("Post not found");
@@ -60,6 +70,7 @@ export default class PostResolver {
       throw new Error("Unauthorized");
 
     post.title = title;
+    post.content = content;
     return post.save();
   }
 

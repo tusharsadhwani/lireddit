@@ -17,6 +17,7 @@ afterAll(async () => {
 
 describe("GraphQL tests", () => {
   const postTitle = faker.lorem.sentence();
+  const postContent = faker.lorem.sentences();
 
   const fakeUser = {
     username: faker.internet.userName(),
@@ -27,23 +28,7 @@ describe("GraphQL tests", () => {
 
   test("register and login", async () => {
     const gqlResponse = await gCall({
-      source: `
-      mutation register($username: String!, $email: String!, $password: String!) {
-        register(
-          options: { username: $username, email: $email, password: $password }
-        ) {
-          errors {
-            field
-            message
-          }
-          user {
-            id
-            username
-            email
-          }
-        }
-      }
-      `,
+      source: REGISTER_MUTATION,
       variableValues: fakeUser,
       contextValue: { req: { session: {} } as any, res: {} as any },
     });
@@ -56,42 +41,21 @@ describe("GraphQL tests", () => {
 
   test("create post and check using orm", async () => {
     const gqlResponse = await gCall({
-      source: `
-        mutation createPost($title: String!) {
-          createPost(title: $title) {
-            id
-            title
-            createdAt
-            updatedAt
-          }
-        }
-      `,
-      variableValues: { title: postTitle },
+      source: CREATE_POST_MUTATION,
+      variableValues: { title: postTitle, content: postContent },
       contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
     expect(gqlResponse.errors).toBeUndefined();
 
     const fetchedPost = await Post.findOne({ title: postTitle });
     expect(fetchedPost?.title).toEqual(postTitle);
+    expect(fetchedPost?.content).toEqual(postContent);
     postId = fetchedPost?.id;
   });
 
   test("fetch posts and check if new post is fetched", async () => {
     const gqlResponse = await gCall({
-      source: `
-        query posts {
-          posts {
-            id
-            title
-            createdAt
-            updatedAt
-            creator {
-              id
-              username
-            }
-          }
-        }
-      `,
+      source: POSTS_QUERY,
       variableValues: {},
       contextValue: { req: {} as any, res: {} as any },
     });
@@ -101,22 +65,19 @@ describe("GraphQL tests", () => {
     const post = posts.find((post) => post.title === postTitle);
     expect(post).toBeDefined();
     expect(post?.creator.id).toEqual(userId);
+    expect(post?.content).toEqual(postContent);
   });
 
   const updatedPostTitle = faker.lorem.sentence();
+  const updatedPostContent = faker.lorem.sentences();
   test("update post", async () => {
     const gqlResponse = await gCall({
-      source: `
-        mutation updatePost($id: Int!, $title: String!) {
-          updatePost(id: $id, title: $title) {
-            id
-            title
-            createdAt
-            updatedAt
-          }
-        }
-      `,
-      variableValues: { id: postId, title: updatedPostTitle },
+      source: UPDATE_POST_MUTATION,
+      variableValues: {
+        id: postId,
+        title: updatedPostTitle,
+        content: updatedPostContent,
+      },
       contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
     expect(gqlResponse.errors).toBeUndefined();
@@ -129,36 +90,23 @@ describe("GraphQL tests", () => {
   });
 
   const newPostTitle = faker.lorem.sentence();
+  const newPostContent = faker.lorem.sentences();
   test("Errors in updating or deleting when logged out", async () => {
     let gqlResponse = await gCall({
-      source: `
-        mutation createPost($title: String!) {
-          createPost(title: $title) {
-            id
-            title
-            createdAt
-            updatedAt
-          }
-        }
-      `,
-      variableValues: { title: newPostTitle },
+      source: CREATE_POST_MUTATION,
+      variableValues: { title: newPostTitle, content: newPostContent },
       contextValue: { req: {} as any, res: {} as any },
     });
     expect(gqlResponse.data).toBeFalsy();
     expect(gqlResponse.errors).toBeDefined();
 
     gqlResponse = await gCall({
-      source: `
-        mutation updatePost($id: Int!, $title: String!) {
-          updatePost(id: $id, title: $title) {
-            id
-            title
-            createdAt
-            updatedAt
-          }
-        }
-      `,
-      variableValues: { id: postId, title: newPostTitle },
+      source: UPDATE_POST_MUTATION,
+      variableValues: {
+        id: postId,
+        title: newPostTitle,
+        content: newPostContent,
+      },
       contextValue: { req: { session: {} } as any, res: {} as any },
     });
     expect(gqlResponse.data).toBeFalsy();
@@ -166,11 +114,7 @@ describe("GraphQL tests", () => {
     console.log(gqlResponse);
 
     gqlResponse = await gCall({
-      source: `
-        mutation deletePost($id: Int!) {
-          deletePost(id: $id)
-        }
-      `,
+      source: DELETE_POST_MUTATION,
       variableValues: { id: postId },
       contextValue: { req: {} as any, res: {} as any },
     });
@@ -187,23 +131,7 @@ describe("GraphQL tests", () => {
     let userId: number | undefined;
 
     let gqlResponse = await gCall({
-      source: `
-        mutation register($username: String!, $email: String!, $password: String!) {
-          register(
-            options: { username: $username, email: $email, password: $password }
-          ) {
-            errors {
-              field
-              message
-            }
-            user {
-              id
-              username
-              email
-            }
-          }
-        }
-        `,
+      source: REGISTER_MUTATION,
       variableValues: fakeUser,
       contextValue: { req: { session: {} } as any, res: {} as any },
     });
@@ -212,16 +140,7 @@ describe("GraphQL tests", () => {
     userId = user.id;
 
     gqlResponse = await gCall({
-      source: `
-        mutation createPost($title: String!) {
-          createPost(title: $title) {
-            id
-            title
-            createdAt
-            updatedAt
-          }
-        }
-      `,
+      source: CREATE_POST_MUTATION,
       variableValues: { title: newPostTitle },
       contextValue: { req: { session: {} } as any, res: {} as any },
     });
@@ -229,16 +148,7 @@ describe("GraphQL tests", () => {
     expect(gqlResponse.errors).toBeDefined();
 
     gqlResponse = await gCall({
-      source: `
-        mutation updatePost($id: Int!, $title: String!) {
-          updatePost(id: $id, title: $title) {
-            id
-            title
-            createdAt
-            updatedAt
-          }
-        }
-      `,
+      source: UPDATE_POST_MUTATION,
       variableValues: { id: postId, title: newPostTitle },
       contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
@@ -246,11 +156,7 @@ describe("GraphQL tests", () => {
     expect(gqlResponse.errors).toBeDefined();
 
     gqlResponse = await gCall({
-      source: `
-        mutation deletePost($id: Int!) {
-          deletePost(id: $id)
-        }
-      `,
+      source: DELETE_POST_MUTATION,
       variableValues: { id: postId },
       contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
@@ -260,11 +166,7 @@ describe("GraphQL tests", () => {
 
   test("delete post", async () => {
     const gqlResponse = await gCall({
-      source: `
-        mutation deletePost($id: Int!) {
-          deletePost(id: $id)
-        }
-      `,
+      source: DELETE_POST_MUTATION,
       variableValues: { id: postId },
       contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
@@ -277,3 +179,62 @@ describe("GraphQL tests", () => {
     expect(fetchedPost).toBeUndefined();
   });
 });
+
+const REGISTER_MUTATION = `
+mutation register($username: String!, $email: String!, $password: String!) {
+  register(
+    options: { username: $username, email: $email, password: $password }
+  ) {
+    errors {
+      field
+      message
+    }
+    user {
+      id
+      username
+      email
+    }
+  }
+}`;
+
+const CREATE_POST_MUTATION = `
+mutation createPost($title: String!, $content: String!) {
+  createPost(title: $title, content: $content) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+  }
+}`;
+
+const POSTS_QUERY = `
+query posts {
+  posts {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    creator {
+      id
+      username
+    }
+  }
+}`;
+
+const UPDATE_POST_MUTATION = `
+mutation updatePost($id: Int!, $title: String!, $content: String!) {
+  updatePost(id: $id, title: $title, content: $content) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+  }
+}`;
+
+const DELETE_POST_MUTATION = `
+mutation deletePost($id: Int!) {
+  deletePost(id: $id)
+}`;

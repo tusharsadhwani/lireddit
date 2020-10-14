@@ -22,6 +22,10 @@ export class Post extends BaseEntity {
   title!: string;
 
   @Column()
+  @Field()
+  content!: string;
+
+  @Column()
   @Field(() => Int)
   creatorId!: number;
 
