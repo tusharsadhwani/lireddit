@@ -3,13 +3,13 @@ import React, { useEffect } from "react";
 import { Navbar } from "./Navbar";
 
 export const Layout: React.FC = ({ children }) => {
-  const { colorMode: _colorMode, setColorMode } = useColorMode();
+  let { colorMode, setColorMode } = useColorMode();
 
   const bgColor = { light: "gray.50", dark: "gray.900" };
   const color = { light: "black", dark: "white" };
 
-  // _colorMode is undefined or empty string in the beginning
-  const colorMode = _colorMode == "light" ? "light" : "dark";
+  // colorMode is undefined or empty string in the beginning for some reason
+  colorMode ??= "dark";
   useEffect(() => {
     setColorMode(colorMode);
   });
@@ -18,7 +18,6 @@ export const Layout: React.FC = ({ children }) => {
     <Box minH="100vh" bg={bgColor[colorMode]} color={color[colorMode]}>
       <Navbar />
       <Box p={4}>{children}</Box>
-      {/* <Footer /> */}
     </Box>
   );
 };
