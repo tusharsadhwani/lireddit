@@ -1,0 +1,9 @@
+fragment LoginFormData on UserResponse {
+  user {
+    ...UserData
+  }
+  errors {
+    field
+    message
+  }
+}
