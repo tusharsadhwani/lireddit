@@ -1,6 +1,7 @@
-import { Text } from "@chakra-ui/core";
 import { withUrqlClient } from "next-urql";
+import React from "react";
 import { Layout } from "../components/Layout";
+import { Post } from "../components/Post";
 import { usePostsQuery } from "../generated/graphql";
 import createUrqlClient from "../utils/createUrqlClient";
 
@@ -10,7 +11,7 @@ const Index = () => {
   return (
     <Layout>
       {postsQuery.data?.posts.map((post) => (
-        <Text key={post.id}>{post.title}</Text>
+        <Post {...post} creatorName={post.creator.username} />
       ))}
     </Layout>
   );

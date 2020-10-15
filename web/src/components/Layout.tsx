@@ -1,4 +1,4 @@
-import { Box, useColorMode } from "@chakra-ui/core";
+import { Box, Flex, useColorMode } from "@chakra-ui/core";
 import React, { useEffect } from "react";
 import { Navbar } from "./Navbar";
 
@@ -17,7 +17,9 @@ export const Layout: React.FC = ({ children }) => {
   return (
     <Box minH="100vh" bg={bgColor[colorMode]} color={color[colorMode]}>
       <Navbar />
-      <Box p={4}>{children}</Box>
+      <Flex flexDir="column" p={4} align="center">
+        {children}
+      </Flex>
     </Box>
   );
 };
