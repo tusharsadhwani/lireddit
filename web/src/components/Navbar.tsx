@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading } from "@chakra-ui/core";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React from "react";
@@ -20,11 +20,12 @@ const _Navbar: React.FC = () => {
   };
 
   return (
-    <Flex px={4} height={55} align="center">
+    <Flex id="navbar" px={4} height={55} align="center">
       <Heading>Lireddit</Heading>
       <Spacer />
+      {meData?.me ? <Text>{meData.me.username}</Text> : null}
       <Button
-        mr={4}
+        m={4}
         onClick={handleLoginLogoutButton}
         isLoading={logoutFetching}
         children={meData?.me ? "Logout" : "Login"}
