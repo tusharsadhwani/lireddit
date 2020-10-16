@@ -6,7 +6,12 @@ interface PostProps {
   creatorName: string;
 }
 
-export const Post: React.FC<PostProps> = ({ title, content, creatorName }) => {
+export const Post: React.FC<PostProps> = ({
+  id,
+  title,
+  content,
+  creatorName,
+}) => {
   const theme = useTheme() as any;
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
@@ -20,7 +25,9 @@ export const Post: React.FC<PostProps> = ({ title, content, creatorName }) => {
       p={4}
       mb={6}
     >
-      <Heading>{title}</Heading>
+      <Heading as="a" href={`/${id}`}>
+        {title}
+      </Heading>
       <Text
         fontStyle="italic"
         color={isDark ? theme.darkColors.subtitle : theme.colors.subtitle}
