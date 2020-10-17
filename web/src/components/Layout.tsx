@@ -9,7 +9,7 @@ export const Layout: React.FC = ({ children }) => {
   const color = { light: "black", dark: "white" };
 
   // colorMode is undefined or empty string in the beginning for some reason
-  colorMode ??= "dark";
+  colorMode ||= "dark";
   useEffect(() => {
     setColorMode(colorMode);
   });
