@@ -33,7 +33,7 @@ export type QueryUserArgs = {
 
 export type Post = {
   __typename?: 'Post';
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   title: Scalars['String'];
   content: Scalars['String'];
   creatorId: Scalars['Int'];
@@ -44,7 +44,7 @@ export type Post = {
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   username: Scalars['String'];
   email: Scalars['String'];
   posts: Post;

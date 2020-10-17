@@ -1,6 +1,7 @@
 import { Box, Heading, Text, useColorMode, useTheme } from "@chakra-ui/core";
 
 interface PostProps {
+  id: number;
   title: string;
   content: string;
   creatorName: string;
