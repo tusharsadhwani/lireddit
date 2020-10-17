@@ -15,7 +15,8 @@ const PostPage: React.FC = () => {
 
   const post = postQuery.data?.post;
 
-  if (!post) return <p>Post not found</p>;
+  if (post === undefined) return <div />;
+  if (post === null) return <p>Post not found</p>;
 
   return (
     <Layout>
