@@ -11,7 +11,7 @@ const Index = () => {
   return (
     <Layout>
       {postsQuery.data?.posts.map((post) => (
-        <Post {...post} creatorName={post.creator.username} />
+        <Post {...post} creatorName={post.creator.username} headerLink />
       ))}
     </Layout>
   );

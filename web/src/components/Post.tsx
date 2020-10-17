@@ -5,6 +5,7 @@ interface PostProps {
   title: string;
   content: string;
   creatorName: string;
+  headerLink?: boolean;
 }
 
 export const Post: React.FC<PostProps> = ({
@@ -12,6 +13,7 @@ export const Post: React.FC<PostProps> = ({
   title,
   content,
   creatorName,
+  headerLink,
 }) => {
   const theme = useTheme() as any;
   const { colorMode } = useColorMode();
@@ -26,7 +28,7 @@ export const Post: React.FC<PostProps> = ({
       p={4}
       mb={6}
     >
-      <Heading as="a" href={`/${id}`}>
+      <Heading as={headerLink ? "a" : undefined} href={`/${id}`}>
         {title}
       </Heading>
       <Text
