@@ -18,15 +18,14 @@ const _Navbar: React.FC = () => {
       {meData?.me ? (
         <>
           <Text>{meData.me.username}</Text>
-          <Button
-            m={4}
-            onClick={() => logout()}
-            isLoading={logoutFetching}
-            children="Logout"
-          />
+          <Button m={4} onClick={() => logout()} isLoading={logoutFetching}>
+            Logout
+          </Button>
         </>
       ) : (
-        <Button m={4} onClick={() => router.push("/login")} children="Login" />
+        <Button m={4} onClick={() => router.push("/login")}>
+          Login
+        </Button>
       )}
       <DarkModeSwitch />
     </Flex>
