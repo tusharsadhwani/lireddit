@@ -24,7 +24,7 @@ export const Post: React.FC<PostProps> = ({
       borderWidth={1}
       borderColor={isDark ? theme.darkColors.border : theme.colors.border}
       borderRadius={5}
-      w={700}
+      w="100%"
       p={4}
       mb={6}
     >

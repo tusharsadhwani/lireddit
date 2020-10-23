@@ -17,7 +17,7 @@ export const Layout: React.FC = ({ children }) => {
   return (
     <Box minH="100vh" bg={bgColor[colorMode]} color={color[colorMode]}>
       <Navbar />
-      <Flex flexDir="column" p={4} align="center">
+      <Flex flexDir="column" p={4} m="auto" align="center" w="100%" maxW={700}>
         {children}
       </Flex>
     </Box>

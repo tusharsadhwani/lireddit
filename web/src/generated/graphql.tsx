@@ -129,6 +129,20 @@ export type UserDataFragment = (
   & Pick<User, 'id' | 'username' | 'email'>
 );
 
+export type CreatePostMutationVariables = Exact<{
+  title: Scalars['String'];
+  content: Scalars['String'];
+}>;
+
+
+export type CreatePostMutation = (
+  { __typename?: 'Mutation' }
+  & { createPost: (
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'title' | 'content'>
+  ) }
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -227,6 +241,19 @@ export const LoginFormDataFragmentDoc = gql`
   }
 }
     ${UserDataFragmentDoc}`;
+export const CreatePostDocument = gql`
+    mutation createPost($title: String!, $content: String!) {
+  createPost(title: $title, content: $content) {
+    id
+    title
+    content
+  }
+}
+    `;
+
+export function useCreatePostMutation() {
+  return Urql.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument);
+};
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
   login(options: {usernameOrEmail: $usernameOrEmail, password: $password}) {
