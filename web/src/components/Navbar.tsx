@@ -11,25 +11,23 @@ const _Navbar: React.FC = () => {
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   const router = useRouter();
 
-  const handleLoginLogoutButton = async () => {
-    if (meData?.me) {
-      await logout();
-    } else {
-      router.push("/login");
-    }
-  };
-
   return (
     <Flex id="navbar" px={4} height={55} align="center">
       <Heading>Lireddit</Heading>
       <Spacer />
-      {meData?.me ? <Text>{meData.me.username}</Text> : null}
-      <Button
-        m={4}
-        onClick={handleLoginLogoutButton}
-        isLoading={logoutFetching}
-        children={meData?.me ? "Logout" : "Login"}
-      />
+      {meData?.me ? (
+        <>
+          <Text>{meData.me.username}</Text>
+          <Button
+            m={4}
+            onClick={() => logout()}
+            isLoading={logoutFetching}
+            children="Logout"
+          />
+        </>
+      ) : (
+        <Button m={4} onClick={() => router.push("/login")} children="Login" />
+      )}
       <DarkModeSwitch />
     </Flex>
   );
