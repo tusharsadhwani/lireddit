@@ -24,7 +24,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = () => {
       }}
     >
       {({ values, isSubmitting }) => (
-        <Form style={{ width: "100%" }}>
+        <Form id="newpost" style={{ width: "100%" }}>
           <Flex align="flex-end" mb={4}>
             <Box flexGrow={1} mr={4}>
               <InputField name="title" placeholder="Create Post..." />
