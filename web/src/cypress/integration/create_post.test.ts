@@ -39,6 +39,11 @@ export const test = () => {
       cy.get("body").should("contain.text", title);
       cy.get("body").should("contain.text", content);
     });
+
+    it("Logout", () => {
+      cy.contains("Logout").click();
+      cy.get("#navbar").should("contain.text", "Login");
+    });
   });
 };
 

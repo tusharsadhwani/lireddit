@@ -63,6 +63,11 @@ export const test = () => {
       cy.reload();
       cy.get("#navbar").should("contain.text", username.toLowerCase());
     });
+
+    it("Logout", () => {
+      cy.contains("Logout").click();
+      cy.get("#navbar").should("contain.text", "Login");
+    });
   });
 };
 
