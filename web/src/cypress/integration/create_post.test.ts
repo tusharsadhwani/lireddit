@@ -35,9 +35,7 @@ export const test = () => {
       form.get("#title").click().type(title);
       form.get("#content").click().type(content);
       form.get("button[type=submit]").click();
-
-      cy.wait(500); //TODO: Replace with better way to detect if form submitted
-      cy.reload();
+      cy.url().should("match", /.+\/\d+\/?$/);
       cy.get("body").should("contain.text", title);
       cy.get("body").should("contain.text", content);
     });

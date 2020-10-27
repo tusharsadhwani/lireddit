@@ -1,5 +1,6 @@
 import { Box, Button, Flex } from "@chakra-ui/core";
 import { Form, Formik } from "formik";
+import { useRouter } from "next/router";
 import React, { useRef } from "react";
 
 import { useCreatePostMutation } from "../generated/graphql";
@@ -11,6 +12,8 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [, createPost] = useCreatePostMutation();
 
+  const router = useRouter();
+
   return (
     <Formik
       initialValues={{ title: "", content: "" }}
@@ -21,6 +24,8 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = () => {
           return;
         }
         resetForm();
+        const post = response.data?.createPost.id;
+        router.push(`/${post}`);
       }}
     >
       {({ values, isSubmitting }) => (
