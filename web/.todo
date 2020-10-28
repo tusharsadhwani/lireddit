@@ -1,0 +1,18 @@
+Lireddit:
+  ☐ Images in posts
+  ☐ Upvote/Downvote posts
+  ☐ Edit posts
+  ☐ Delete posts
+  ☐ Profile page
+  ☐ User has name, image and bio
+
+  Subreddits:
+    ☐ Every post is made in a sub
+    ☐ One default sub: random/default/all something like that
+    ☐ Users can create/delete subs
+    ☐ Subs have name, image and bio
+      -> same as user, can use same sidebar and same create form with validation
+  
+  Deploy:
+    ☐ Deploy on hetzner, no docker
+    ☐ Figure out how to do updates to deployed server easily
