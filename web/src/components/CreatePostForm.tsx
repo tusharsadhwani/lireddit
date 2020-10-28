@@ -43,7 +43,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = () => {
             h={values.title ? contentHeight : 0}
             mb={values.title ? 4 : 0}
             opacity={values.title ? 1 : 0}
-            transition="all 300ms ease-in-out"
+            transition={values.content ? "unset" : "all 300ms ease-in-out"}
           >
             <Box ref={contentRef}>
               <InputField

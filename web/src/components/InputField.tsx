@@ -36,10 +36,10 @@ export const InputField: React.FC<InputFieldProps> = ({
           onHeightChange={onResize}
           py={textarea || autosize ? 3 : 0}
           height={textarea ? 40 : undefined}
-          transitionDuration="0"
           {...field}
           {...props}
           id={field.name}
+          style={{ WebkitTransition: "unset", transition: "unset" }}
         />
         {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
       </FormControl>
