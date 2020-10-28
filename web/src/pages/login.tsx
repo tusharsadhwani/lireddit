@@ -3,16 +3,19 @@ import { Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useLoginMutation } from "../generated/graphql";
 import createUrqlClient from "../utils/createUrqlClient";
 import { mapFormErrors } from "../utils/mapFormErrors";
 
+import qs from "query-string";
+
 const Login = () => {
   const [, login] = useLoginMutation();
   const router = useRouter();
+
   return (
     <Layout>
       <Flex dir="column" justify="center" align="center">
@@ -28,7 +31,10 @@ const Login = () => {
                 return;
               }
 
-              router.push("/");
+              const params = qs.parse(location.search);
+              const backPath = params?.back as string | undefined;
+              if (backPath) router.push(backPath);
+              else router.push("/");
             }}
           >
             {({ isSubmitting }) => (

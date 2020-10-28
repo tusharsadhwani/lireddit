@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { DarkModeSwitch } from "./DarkModeSwitch";
@@ -25,7 +25,10 @@ const _Navbar: React.FC = () => {
           </Button>
         </>
       ) : (
-        <Button m={4} onClick={() => router.push("/login")}>
+        <Button
+          m={4}
+          onClick={() => router.push(`/login?back=${location.pathname}`)}
+        >
           Login
         </Button>
       )}
