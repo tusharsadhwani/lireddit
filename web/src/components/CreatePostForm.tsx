@@ -1,8 +1,7 @@
 import { Box, Button, Flex } from "@chakra-ui/core";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import React, { useRef } from "react";
-
+import React, { useRef, useState } from "react";
 import { useCreatePostMutation } from "../generated/graphql";
 import { InputField } from "./InputField";
 
@@ -10,6 +9,7 @@ export interface CreatePostFormProps {}
 
 export const CreatePostForm: React.FC<CreatePostFormProps> = () => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, resizeContentTextarea] = useState(0);
   const [, createPost] = useCreatePostMutation();
 
   const router = useRouter();
@@ -40,13 +40,18 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = () => {
           </Flex>
 
           <Box
-            h={values.title ? contentRef.current?.clientHeight : 0}
-            mb={values.title ? 3 : 0}
+            h={values.title ? contentHeight : 0}
+            mb={values.title ? 4 : 0}
             opacity={values.title ? 1 : 0}
             transition="all 300ms ease-in-out"
           >
             <Box ref={contentRef}>
-              <InputField name="content" placeholder="Post Content" textarea />
+              <InputField
+                name="content"
+                placeholder="Post Content"
+                autosize
+                onResize={resizeContentTextarea}
+              />
             </Box>
           </Box>
         </Form>
