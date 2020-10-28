@@ -26,14 +26,18 @@ export const InputField: React.FC<InputFieldProps> = ({
   ...props
 }) => {
   const [field, { error }] = useField(props);
+
+  const autosizeProps = autosize
+    ? { minRows: 4, onHeightChange: onResize }
+    : {};
+
   return (
     <Box mt={4}>
       <FormControl isInvalid={!!error}>
         {label ? <FormLabel htmlFor={field.name}>{label}</FormLabel> : null}
         <Input
           as={autosize ? TextAreaAutosize : textarea ? "textarea" : "input"}
-          minRows={4}
-          onHeightChange={onResize}
+          {...autosizeProps}
           py={textarea || autosize ? 3 : 0}
           height={textarea ? 40 : undefined}
           resize={autosize ? "none" : undefined}

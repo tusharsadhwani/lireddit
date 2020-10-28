@@ -14,7 +14,12 @@ const Index = () => {
     <Layout>
       {meData?.me ? <CreatePostForm /> : null}
       {postsQuery.data?.posts.map((post) => (
-        <Post {...post} creatorName={post.creator.username} headerLink />
+        <Post
+          key={post.id}
+          creatorName={post.creator.username}
+          {...post}
+          headerLink
+        />
       ))}
     </Layout>
   );
