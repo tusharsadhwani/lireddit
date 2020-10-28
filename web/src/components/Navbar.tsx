@@ -13,7 +13,9 @@ const _Navbar: React.FC = () => {
 
   return (
     <Flex id="navbar" px={4} height={55} align="center">
-      <Heading>Lireddit</Heading>
+      <Heading as="a" href="/">
+        Lireddit
+      </Heading>
       <Spacer />
       {meData?.me ? (
         <>
