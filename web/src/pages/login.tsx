@@ -3,7 +3,7 @@ import { Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useLoginMutation } from "../generated/graphql";

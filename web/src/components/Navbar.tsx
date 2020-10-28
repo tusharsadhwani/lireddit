@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { DarkModeSwitch } from "./DarkModeSwitch";
