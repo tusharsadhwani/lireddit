@@ -36,6 +36,7 @@ export const InputField: React.FC<InputFieldProps> = ({
           onHeightChange={onResize}
           py={textarea || autosize ? 3 : 0}
           height={textarea ? 40 : undefined}
+          resize={autosize ? "none" : undefined}
           {...field}
           {...props}
           id={field.name}
