@@ -18,13 +18,14 @@ afterAll(async () => {
 describe("GraphQL tests", () => {
   const postTitle = faker.lorem.sentence();
   const postContent = faker.lorem.sentences();
+  const postImgUrl = faker.image.imageUrl();
 
   const fakeUser = {
     username: faker.internet.userName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
   };
-  let userId: number | undefined;
+  let userId: number;
 
   test("register and login", async () => {
     const gqlResponse = await gCall({
@@ -34,6 +35,7 @@ describe("GraphQL tests", () => {
     });
     const user = gqlResponse.data?.register.user as User;
     expect(user.username).toEqual(fakeUser.username.toLowerCase());
+    expect(user.id).toBeDefined();
     userId = user.id;
   });
 
@@ -42,7 +44,11 @@ describe("GraphQL tests", () => {
   test("create post and check using orm", async () => {
     const gqlResponse = await gCall({
       source: CREATE_POST_MUTATION,
-      variableValues: { title: postTitle, content: postContent },
+      variableValues: {
+        title: postTitle,
+        content: postContent,
+        imgUrl: postImgUrl,
+      },
       contextValue: { req: { session: { userId } } as any, res: {} as any },
     });
     expect(gqlResponse.errors).toBeUndefined();
@@ -50,6 +56,8 @@ describe("GraphQL tests", () => {
     const fetchedPost = await Post.findOne({ title: postTitle });
     expect(fetchedPost?.title).toEqual(postTitle);
     expect(fetchedPost?.content).toEqual(postContent);
+    expect(fetchedPost?.imgUrl).toEqual(postImgUrl);
+    expect(fetchedPost?.id).toBeDefined();
     postId = fetchedPost?.id;
   });
 
@@ -198,11 +206,12 @@ mutation register($username: String!, $email: String!, $password: String!) {
 }`;
 
 const CREATE_POST_MUTATION = `
-mutation createPost($title: String!, $content: String!) {
-  createPost(title: $title, content: $content) {
+mutation createPost($title: String!, $content: String!, $imgUrl: String) {
+  createPost(title: $title, content: $content, imgUrl: $imgUrl) {
     id
     title
     content
+    imgUrl
     createdAt
     updatedAt
   }
@@ -214,6 +223,7 @@ query posts {
     id
     title
     content
+    imgUrl
     createdAt
     updatedAt
     creator {

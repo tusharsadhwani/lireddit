@@ -1,4 +1,5 @@
 import { ConnectionOptions } from "typeorm";
+import { __prod__ } from "./constants";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 
@@ -10,8 +11,8 @@ export const typeormConfig = (
   database: dbName,
   username: "postgres",
   password: "password",
-  synchronize: true,
+  synchronize: !__prod__,
   dropSchema: reset,
   entities: [User, Post],
-  logging: true,
+  logging: !__prod__,
 });

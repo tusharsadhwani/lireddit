@@ -25,6 +25,10 @@ export class Post extends BaseEntity {
   @Field()
   content!: string;
 
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  imgUrl!: string;
+
   @Column()
   @Field(() => Int)
   creatorId!: number;
