@@ -3,14 +3,13 @@ import { Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import qs from "query-string";
 import React from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useLoginMutation } from "../generated/graphql";
 import createUrqlClient from "../utils/createUrqlClient";
 import { mapFormErrors } from "../utils/mapFormErrors";
-
-import qs from "query-string";
 
 const Login = () => {
   const [, login] = useLoginMutation();
