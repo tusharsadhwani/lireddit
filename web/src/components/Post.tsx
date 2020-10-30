@@ -94,10 +94,10 @@ export const Post: React.FC<PostProps> = ({
       >
         by {creatorName}
       </Text>
-      <Text mt={3} whiteSpace="pre">
+      <Text mt={3} whiteSpace="break-spaces">
         {content}
       </Text>
-      {imgUrl ? <Image src={imgUrl} mt={3} /> : null}
+      {imgUrl ? <Image mx="auto" src={imgUrl} mt={3} maxH={500} /> : null}
     </Box>
   );
 };
