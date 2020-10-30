@@ -17,6 +17,7 @@ const Index = () => {
         <Post
           key={post.id}
           creatorName={post.creator.username}
+          userIsOwner={!!meData?.me && meData?.me?.id === post.creator.id}
           {...post}
           headerLink
         />

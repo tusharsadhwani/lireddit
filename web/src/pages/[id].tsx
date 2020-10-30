@@ -3,18 +3,20 @@ import { withUrqlClient } from "next-urql";
 import React from "react";
 import { Layout } from "../components/Layout";
 import { Post } from "../components/Post";
-import { usePostQuery } from "../generated/graphql";
+import { useMeQuery, usePostQuery } from "../generated/graphql";
 import createUrqlClient from "../utils/createUrqlClient";
 
 interface PostPageProps {
-  id?: string;
+  idString?: string;
 }
 
-const PostPage: React.FC<PostPageProps> = ({ id }) => {
+const PostPage: React.FC<PostPageProps> = ({ idString }) => {
+  if (!idString) return <p>Post not found</p>; //TODO: 404
+  const id = parseInt(idString);
   if (!id) return <p>Post not found</p>; //TODO: 404
 
-  const postId = parseInt(id);
-  const [postQuery] = usePostQuery({ variables: { id: postId } });
+  const [postQuery] = usePostQuery({ variables: { id } });
+  const [{ data: meData }] = useMeQuery();
 
   const post = postQuery.data?.post;
 
@@ -23,14 +25,18 @@ const PostPage: React.FC<PostPageProps> = ({ id }) => {
 
   return (
     <Layout>
-      <Post {...post} creatorName={post.creator.username} />
+      <Post
+        {...post}
+        creatorName={post.creator.username}
+        userIsOwner={!!meData?.me && meData?.me?.id === post.creator.id}
+      />
     </Layout>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
-    props: { id: context.params?.id },
+    props: { idString: context.params?.id },
   };
 };
 
