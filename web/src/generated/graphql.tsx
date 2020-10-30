@@ -203,7 +203,7 @@ export type PostQuery = (
   { __typename?: 'Query' }
   & { post?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -218,7 +218,7 @@ export type PostsQuery = (
   { __typename?: 'Query' }
   & { posts: Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content' | 'createdAt' | 'updatedAt'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl' | 'createdAt' | 'updatedAt'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -306,6 +306,7 @@ export const PostDocument = gql`
     id
     title
     content
+    imgUrl
     creator {
       id
       username
@@ -323,6 +324,7 @@ export const PostsDocument = gql`
     id
     title
     content
+    imgUrl
     creator {
       id
       username
