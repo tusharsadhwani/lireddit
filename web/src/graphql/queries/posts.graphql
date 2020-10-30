@@ -3,6 +3,7 @@ query Posts {
     id
     title
     content
+    imgUrl
     creator {
       id
       username

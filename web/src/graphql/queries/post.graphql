@@ -3,6 +3,7 @@ query post($id: Int!) {
     id
     title
     content
+    imgUrl
     creator {
       id
       username

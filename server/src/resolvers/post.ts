@@ -31,10 +31,13 @@ export default class PostResolver {
 
   @Mutation(() => Post)
   async createPost(
+    @Ctx() { req }: MyContext,
     @Arg("title", () => String) title: string,
     @Arg("content", () => String) content: string,
-    @Ctx() { req }: MyContext
+    @Arg("imgUrl", () => String, { nullable: true }) imgUrl?: string
   ): Promise<Post> {
+    console.log(req.session);
+    //TODO: make auth middleware, and check if user with that id actually exists
     if (!req.session.userId) throw new Error("Not Logged in");
 
     title = title.trim();
@@ -42,9 +45,13 @@ export default class PostResolver {
     if (!title) throw new Error("Title cannot be empty");
     if (!content) throw new Error("Content cannot be empty");
 
+    //TODO: url validation
+    if (imgUrl) imgUrl = imgUrl.trim();
+
     return Post.create({
       title,
       content,
+      imgUrl,
       creatorId: parseInt(req.session.userId),
     }).save();
   }

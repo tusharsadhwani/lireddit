@@ -36,6 +36,7 @@ export type Post = {
   id: Scalars['Int'];
   title: Scalars['String'];
   content: Scalars['String'];
+  imgUrl?: Maybe<Scalars['String']>;
   creatorId: Scalars['Int'];
   creator: User;
   createdAt: Scalars['String'];
@@ -64,6 +65,7 @@ export type Mutation = {
 
 
 export type MutationCreatePostArgs = {
+  imgUrl?: Maybe<Scalars['String']>;
   content: Scalars['String'];
   title: Scalars['String'];
 };
@@ -132,6 +134,7 @@ export type UserDataFragment = (
 export type CreatePostMutationVariables = Exact<{
   title: Scalars['String'];
   content: Scalars['String'];
+  imgUrl?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -139,7 +142,7 @@ export type CreatePostMutation = (
   { __typename?: 'Mutation' }
   & { createPost: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl'>
   ) }
 );
 
@@ -200,7 +203,7 @@ export type PostQuery = (
   { __typename?: 'Query' }
   & { post?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -215,7 +218,7 @@ export type PostsQuery = (
   { __typename?: 'Query' }
   & { posts: Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content' | 'createdAt' | 'updatedAt'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl' | 'createdAt' | 'updatedAt'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -242,11 +245,12 @@ export const LoginFormDataFragmentDoc = gql`
 }
     ${UserDataFragmentDoc}`;
 export const CreatePostDocument = gql`
-    mutation createPost($title: String!, $content: String!) {
-  createPost(title: $title, content: $content) {
+    mutation createPost($title: String!, $content: String!, $imgUrl: String) {
+  createPost(title: $title, content: $content, imgUrl: $imgUrl) {
     id
     title
     content
+    imgUrl
   }
 }
     `;
@@ -302,6 +306,7 @@ export const PostDocument = gql`
     id
     title
     content
+    imgUrl
     creator {
       id
       username
@@ -319,6 +324,7 @@ export const PostsDocument = gql`
     id
     title
     content
+    imgUrl
     creator {
       id
       username

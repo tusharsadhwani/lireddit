@@ -1,9 +1,17 @@
-import { Box, Heading, Text, useColorMode, useTheme } from "@chakra-ui/core";
+import {
+  Box,
+  Heading,
+  Image,
+  Text,
+  useColorMode,
+  useTheme,
+} from "@chakra-ui/core";
 
 interface PostProps {
   id: number;
   title: string;
   content: string;
+  imgUrl: string;
   creatorName: string;
   headerLink?: boolean;
 }
@@ -12,6 +20,7 @@ export const Post: React.FC<PostProps> = ({
   id,
   title,
   content,
+  imgUrl,
   creatorName,
   headerLink,
 }) => {
@@ -39,6 +48,7 @@ export const Post: React.FC<PostProps> = ({
         by {creatorName}
       </Text>
       <Text mt={3}>{content}</Text>
+      {imgUrl ? <Image src={imgUrl} mt={3} /> : null}
     </Box>
   );
 };
