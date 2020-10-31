@@ -1,4 +1,4 @@
-import { Heading, Text } from "@chakra-ui/core";
+import { Text } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { withUrqlClient } from "next-urql";
 import React from "react";
