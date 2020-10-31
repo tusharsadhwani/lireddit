@@ -3,6 +3,7 @@ query post($id: Int!) {
     id
     title
     content
+    upvoteCount
     imgUrl
     creator {
       id

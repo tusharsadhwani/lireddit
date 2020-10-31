@@ -1,0 +1,3 @@
+query upvoteStatus($postId: Int!) {
+  upvoteStatus(postId: $postId)
+}

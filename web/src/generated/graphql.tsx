@@ -16,6 +16,7 @@ export type Query = {
   __typename?: 'Query';
   posts: Array<Post>;
   post?: Maybe<Post>;
+  upvoteStatus?: Maybe<Scalars['Boolean']>;
   users: Array<User>;
   user?: Maybe<User>;
   me?: Maybe<User>;
@@ -24,6 +25,11 @@ export type Query = {
 
 export type QueryPostArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryUpvoteStatusArgs = {
+  postId: Scalars['Int'];
 };
 
 
@@ -41,6 +47,7 @@ export type Post = {
   creator: User;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  upvoteCount: Scalars['Int'];
 };
 
 export type User = {
@@ -58,6 +65,8 @@ export type Mutation = {
   createPost: Post;
   updatePost: Post;
   deletePost: Scalars['Boolean'];
+  upvote: Post;
+  downvote: Post;
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
@@ -80,6 +89,16 @@ export type MutationUpdatePostArgs = {
 
 export type MutationDeletePostArgs = {
   id: Scalars['Int'];
+};
+
+
+export type MutationUpvoteArgs = {
+  postId: Scalars['Int'];
+};
+
+
+export type MutationDownvoteArgs = {
+  postId: Scalars['Int'];
 };
 
 
@@ -156,6 +175,19 @@ export type DeletePostMutation = (
   & Pick<Mutation, 'deletePost'>
 );
 
+export type DownvoteMutationVariables = Exact<{
+  postId: Scalars['Int'];
+}>;
+
+
+export type DownvoteMutation = (
+  { __typename?: 'Mutation' }
+  & { downvote: (
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'title' | 'upvoteCount'>
+  ) }
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -208,6 +240,19 @@ export type UpdatePostMutation = (
   ) }
 );
 
+export type UpvoteMutationVariables = Exact<{
+  postId: Scalars['Int'];
+}>;
+
+
+export type UpvoteMutation = (
+  { __typename?: 'Mutation' }
+  & { upvote: (
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'title' | 'upvoteCount'>
+  ) }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -228,7 +273,7 @@ export type PostQuery = (
   { __typename?: 'Query' }
   & { post?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'upvoteCount' | 'imgUrl'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -243,12 +288,22 @@ export type PostsQuery = (
   { __typename?: 'Query' }
   & { posts: Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl' | 'createdAt' | 'updatedAt'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'imgUrl' | 'upvoteCount' | 'createdAt' | 'updatedAt'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
     ) }
   )> }
+);
+
+export type UpvoteStatusQueryVariables = Exact<{
+  postId: Scalars['Int'];
+}>;
+
+
+export type UpvoteStatusQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'upvoteStatus'>
 );
 
 export const UserDataFragmentDoc = gql`
@@ -291,6 +346,19 @@ export const DeletePostDocument = gql`
 
 export function useDeletePostMutation() {
   return Urql.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument);
+};
+export const DownvoteDocument = gql`
+    mutation downvote($postId: Int!) {
+  downvote(postId: $postId) {
+    id
+    title
+    upvoteCount
+  }
+}
+    `;
+
+export function useDownvoteMutation() {
+  return Urql.useMutation<DownvoteMutation, DownvoteMutationVariables>(DownvoteDocument);
 };
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
@@ -338,6 +406,19 @@ export const UpdatePostDocument = gql`
 export function useUpdatePostMutation() {
   return Urql.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument);
 };
+export const UpvoteDocument = gql`
+    mutation upvote($postId: Int!) {
+  upvote(postId: $postId) {
+    id
+    title
+    upvoteCount
+  }
+}
+    `;
+
+export function useUpvoteMutation() {
+  return Urql.useMutation<UpvoteMutation, UpvoteMutationVariables>(UpvoteDocument);
+};
 export const MeDocument = gql`
     query me {
   me {
@@ -355,6 +436,7 @@ export const PostDocument = gql`
     id
     title
     content
+    upvoteCount
     imgUrl
     creator {
       id
@@ -374,6 +456,7 @@ export const PostsDocument = gql`
     title
     content
     imgUrl
+    upvoteCount
     creator {
       id
       username
@@ -386,4 +469,13 @@ export const PostsDocument = gql`
 
 export function usePostsQuery(options: Omit<Urql.UseQueryArgs<PostsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<PostsQuery>({ query: PostsDocument, ...options });
+};
+export const UpvoteStatusDocument = gql`
+    query upvoteStatus($postId: Int!) {
+  upvoteStatus(postId: $postId)
+}
+    `;
+
+export function useUpvoteStatusQuery(options: Omit<Urql.UseQueryArgs<UpvoteStatusQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<UpvoteStatusQuery>({ query: UpvoteStatusDocument, ...options });
 };

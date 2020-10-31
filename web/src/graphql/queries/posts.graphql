@@ -4,6 +4,7 @@ query Posts {
     title
     content
     imgUrl
+    upvoteCount
     creator {
       id
       username

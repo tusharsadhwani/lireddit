@@ -8,10 +8,11 @@ import {
   useTheme,
 } from "@chakra-ui/core";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
-import { useDeletePostMutation } from "../generated/graphql";
+import { useDeletePostMutation, useMeQuery } from "../generated/graphql";
 import PostIcon from "./PostIcon";
+import UpvoteDownvoteButtons from "./UpvoteDownvoteButtons";
 
 interface PostProps {
   id: number;
@@ -21,6 +22,7 @@ interface PostProps {
   creatorName: string;
   headerLink?: boolean;
   userIsOwner?: boolean;
+  upvoteCount?: number;
 }
 
 export const Post: React.FC<PostProps> = ({
@@ -31,6 +33,7 @@ export const Post: React.FC<PostProps> = ({
   creatorName,
   headerLink,
   userIsOwner = false,
+  upvoteCount,
 }) => {
   const theme = useTheme() as any;
   const { colorMode } = useColorMode();
@@ -38,6 +41,7 @@ export const Post: React.FC<PostProps> = ({
 
   const router = useRouter();
   const [, deletePost] = useDeletePostMutation();
+  const [{ data: meData }] = useMeQuery();
 
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -67,31 +71,40 @@ export const Post: React.FC<PostProps> = ({
       mb={6}
     >
       <Flex justify="space-between">
-        <Heading as={headerLink ? "a" : undefined} href={`/${id}`}>
-          {title}
-        </Heading>
-        {userIsOwner ? (
-          <Flex>
-            <PostIcon
-              Icon={FiEdit2}
-              onClick={handleEditPost}
-              loading={editLoading}
-            />
-            <PostIcon
-              Icon={FiTrash2}
-              onClick={handleDeletePost}
-              loading={deleteLoading}
-            />
+        <Box>
+          <Heading as={headerLink ? "a" : undefined} href={`/${id}`}>
+            {title}
+          </Heading>
+          <Text
+            fontStyle="italic"
+            color={isDark ? theme.darkColors.subtitle : theme.colors.subtitle}
+            fontSize={16}
+          >
+            by {creatorName}
+          </Text>
+        </Box>
+        <Flex direction="column" align="flex-end">
+          {userIsOwner ? (
+            <Flex>
+              <PostIcon
+                Icon={FiEdit2}
+                onClick={handleEditPost}
+                loading={editLoading}
+              />
+              <PostIcon
+                Icon={FiTrash2}
+                onClick={handleDeletePost}
+                loading={deleteLoading}
+              />
+            </Flex>
+          ) : null}
+          <Flex align="center" mt={2}>
+            Score: {upvoteCount}
+            {meData?.me ? <UpvoteDownvoteButtons postId={id} /> : null}
           </Flex>
-        ) : null}
+        </Flex>
       </Flex>
-      <Text
-        fontStyle="italic"
-        color={isDark ? theme.darkColors.subtitle : theme.colors.subtitle}
-        fontSize={16}
-      >
-        by {creatorName}
-      </Text>
+
       <Text mt={3} whiteSpace="break-spaces">
         {content}
       </Text>
