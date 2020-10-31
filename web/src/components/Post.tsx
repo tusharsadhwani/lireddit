@@ -104,7 +104,6 @@ export const Post: React.FC<PostProps> = ({
           </Flex>
         </Flex>
       </Flex>
-
       <Text mt={3} whiteSpace="break-spaces">
         {content}
       </Text>
