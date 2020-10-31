@@ -51,9 +51,7 @@ export const Post: React.FC<PostProps> = ({
     setDeleteLoading(true);
 
     const deleted = await deletePost({ id });
-    if (deleted.data?.deletePost)
-      if (router.route == "/") router.reload();
-      else router.push("/");
+    if (deleted.data?.deletePost) router.push("/");
     //TODO: show toast when post deleted, show error when post not deleted
 
     setDeleteLoading(false);

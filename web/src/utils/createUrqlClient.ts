@@ -2,11 +2,13 @@ import { Cache, cacheExchange, QueryInput } from "@urql/exchange-graphcache";
 import { SSRExchange } from "next-urql";
 import { dedupExchange, fetchExchange } from "urql";
 import {
+  DeletePostMutationVariables,
   LoginMutation,
   LogoutMutation,
   MeDocument,
   MeQuery,
   RegisterMutation,
+  UpdatePostMutationVariables,
 } from "../generated/graphql";
 import { isServer } from "./isServer";
 
@@ -75,6 +77,18 @@ const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 _result,
                 () => ({ me: null })
               );
+            },
+            updatePost: (_result, args, cache, __) => {
+              cache.invalidate({
+                __typename: "Post",
+                id: (args as UpdatePostMutationVariables).id,
+              });
+            },
+            deletePost: (_result, args, cache, __) => {
+              cache.invalidate({
+                __typename: "Post",
+                id: (args as DeletePostMutationVariables).id,
+              });
             },
           },
         },
