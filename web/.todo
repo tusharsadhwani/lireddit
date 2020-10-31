@@ -6,7 +6,8 @@ Lireddit:
   ☐ Post Comments
   ✔ Profile page @done(20-10-28 22:51)
   ☐ User has name, image and bio
-  ☐ Pagination
+  ☐ Pagination (posts, comments)
+  ☐ Password reset
 
   Subreddits:
     ☐ Every post is made in a sub

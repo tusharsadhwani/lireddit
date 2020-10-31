@@ -29,7 +29,7 @@ export default class PostResolver {
 
   @Query(() => [Post])
   posts(): Promise<Post[]> {
-    return Post.find();
+    return Post.find({ order: { createdAt: "DESC" }, take: 10 });
   }
 
   @Query(() => Post, { nullable: true })

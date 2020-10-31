@@ -19,11 +19,36 @@ interface PostProps {
   title: string;
   content: string;
   imgUrl?: string | null;
+  createdAt: string;
   creatorName: string;
   headerLink?: boolean;
   userIsOwner?: boolean;
   upvoteCount?: number;
 }
+
+const formatTimestamp = (timestampString: string) => {
+  const date = new Date(parseInt(timestampString));
+  const now = new Date();
+
+  if (
+    date.getDate() !== now.getDate() ||
+    date.getMonth() !== now.getMonth() ||
+    date.getFullYear() !== now.getFullYear()
+  ) {
+    return `on ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+  }
+
+  const secondDiff = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const minuteDiff = Math.floor(secondDiff / 60);
+  const hourDiff = Math.floor(minuteDiff / 60);
+
+  return (
+    (hourDiff ? `${hourDiff}hr ` : "") +
+    (minuteDiff ? `${minuteDiff % 60}min ` : "") +
+    (!hourDiff ? `${secondDiff % 60}sec` : "") +
+    " ago"
+  );
+};
 
 export const Post: React.FC<PostProps> = ({
   id,
@@ -31,6 +56,7 @@ export const Post: React.FC<PostProps> = ({
   content,
   imgUrl,
   creatorName,
+  createdAt,
   headerLink,
   userIsOwner = false,
   upvoteCount,
@@ -79,8 +105,9 @@ export const Post: React.FC<PostProps> = ({
             fontStyle="italic"
             color={isDark ? theme.darkColors.subtitle : theme.colors.subtitle}
             fontSize={16}
+            suppressHydrationWarning
           >
-            by {creatorName}
+            by {creatorName}, {formatTimestamp(createdAt)}
           </Text>
         </Box>
         <Flex direction="column" align="flex-end">
