@@ -99,7 +99,7 @@ export const Post: React.FC<PostProps> = ({
             </Flex>
           ) : null}
           <Flex align="center" mt={2}>
-            Score: {upvoteCount}
+            <Text whiteSpace="nowrap">Score: {upvoteCount}</Text>
             {meData?.me ? <UpvoteDownvoteButtons postId={id} /> : null}
           </Flex>
         </Flex>
