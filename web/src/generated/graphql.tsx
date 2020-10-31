@@ -204,7 +204,7 @@ export type UpdatePostMutation = (
   { __typename?: 'Mutation' }
   & { updatePost: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'createdAt' | 'updatedAt'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'createdAt' | 'updatedAt'>
   ) }
 );
 
@@ -328,6 +328,7 @@ export const UpdatePostDocument = gql`
   updatePost(id: $id, title: $title, content: $content) {
     id
     title
+    content
     createdAt
     updatedAt
   }
