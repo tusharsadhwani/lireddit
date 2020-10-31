@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useDeletePostMutation, useMeQuery } from "../generated/graphql";
+import { formatTimestamp } from "../utils/formatTimestamp";
 import PostIcon from "./PostIcon";
 import UpvoteDownvoteButtons from "./UpvoteDownvoteButtons";
 
@@ -25,30 +26,6 @@ interface PostProps {
   userIsOwner?: boolean;
   upvoteCount?: number;
 }
-
-const formatTimestamp = (timestampString: string) => {
-  const date = new Date(parseInt(timestampString));
-  const now = new Date();
-
-  if (
-    date.getDate() !== now.getDate() ||
-    date.getMonth() !== now.getMonth() ||
-    date.getFullYear() !== now.getFullYear()
-  ) {
-    return `on ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
-  }
-
-  const secondDiff = Math.floor((now.getTime() - date.getTime()) / 1000);
-  const minuteDiff = Math.floor(secondDiff / 60);
-  const hourDiff = Math.floor(minuteDiff / 60);
-
-  return (
-    (hourDiff ? `${hourDiff}hr ` : "") +
-    (minuteDiff ? `${minuteDiff % 60}min ` : "") +
-    (!hourDiff ? `${secondDiff % 60}sec` : "") +
-    " ago"
-  );
-};
 
 export const Post: React.FC<PostProps> = ({
   id,
@@ -126,12 +103,11 @@ export const Post: React.FC<PostProps> = ({
             </Flex>
           ) : null}
           <Flex align="center" mt={2}>
-            Score: {upvoteCount}
+            <Text whiteSpace="nowrap">Score: {upvoteCount}</Text>
             {meData?.me ? <UpvoteDownvoteButtons postId={id} /> : null}
           </Flex>
         </Flex>
       </Flex>
-
       <Text mt={3} whiteSpace="break-spaces">
         {content}
       </Text>

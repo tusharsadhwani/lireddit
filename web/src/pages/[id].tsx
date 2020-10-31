@@ -1,9 +1,15 @@
+import { Heading, Text } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { withUrqlClient } from "next-urql";
 import React from "react";
+import { Comment } from "../components/Comment";
 import { Layout } from "../components/Layout";
 import { Post } from "../components/Post";
-import { useMeQuery, usePostQuery } from "../generated/graphql";
+import {
+  useMeQuery,
+  usePostQuery,
+  useCommentsQuery,
+} from "../generated/graphql";
 import createUrqlClient from "../utils/createUrqlClient";
 
 interface PostPageProps {
@@ -17,6 +23,9 @@ const PostPage: React.FC<PostPageProps> = ({ idString }) => {
 
   const [postQuery] = usePostQuery({ variables: { id } });
   const [{ data: meData }] = useMeQuery();
+  const [{ data: commentData }] = useCommentsQuery({
+    variables: { postId: id },
+  });
 
   const post = postQuery.data?.post;
 
@@ -30,6 +39,17 @@ const PostPage: React.FC<PostPageProps> = ({ idString }) => {
         creatorName={post.creator.username}
         userIsOwner={!!meData?.me && meData?.me?.id === post.creator.id}
       />
+      <Text fontSize={20} mr="auto">
+        Comments:
+      </Text>
+      {commentData?.comments.map(({ id, user, createdAt, comment }) => (
+        <Comment
+          key={id}
+          creatorName={user.username}
+          createdAt={createdAt}
+          comment={comment}
+        />
+      ))}
     </Layout>
   );
 };
