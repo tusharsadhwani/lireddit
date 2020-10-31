@@ -3,12 +3,14 @@ import { SSRExchange } from "next-urql";
 import { dedupExchange, fetchExchange } from "urql";
 import {
   DeletePostMutationVariables,
+  DownvoteMutationVariables,
   LoginMutation,
   LogoutMutation,
   MeDocument,
   MeQuery,
   RegisterMutation,
   UpdatePostMutationVariables,
+  UpvoteMutationVariables,
 } from "../generated/graphql";
 import { isServer } from "./isServer";
 
@@ -77,17 +79,55 @@ const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 _result,
                 () => ({ me: null })
               );
+              //TODO: uh oh bad code, also broken apparently
+              const allFields = cache.inspectFields("Query");
+              const fieldInfos = allFields.filter(
+                (info) => info.fieldName === "upvoteStatus"
+              );
+              fieldInfos.forEach((fi) => {
+                cache.invalidate("Query", "upvoteStatus", fi.arguments || {});
+              });
             },
-            updatePost: (_result, args, cache, __) => {
+            updatePost: (_result, args, cache, _) => {
               cache.invalidate({
                 __typename: "Post",
                 id: (args as UpdatePostMutationVariables).id,
               });
             },
-            deletePost: (_result, args, cache, __) => {
+            deletePost: (_result, args, cache, _) => {
               cache.invalidate({
                 __typename: "Post",
                 id: (args as DeletePostMutationVariables).id,
+              });
+            },
+            upvote: (_result, args, cache, _) => {
+              cache.invalidate({
+                __typename: "Post",
+                id: (args as UpvoteMutationVariables).postId,
+              });
+
+              //TODO: uh oh bad code
+              const allFields = cache.inspectFields("Query");
+              const fieldInfos = allFields.filter(
+                (info) => info.fieldName === "upvoteStatus"
+              );
+              fieldInfos.forEach((fi) => {
+                cache.invalidate("Query", "upvoteStatus", fi.arguments || {});
+              });
+            },
+            downvote: (_result, args, cache, _) => {
+              cache.invalidate({
+                __typename: "Post",
+                id: (args as DownvoteMutationVariables).postId,
+              });
+
+              //TODO: uh oh bad code
+              const allFields = cache.inspectFields("Query");
+              const fieldInfos = allFields.filter(
+                (info) => info.fieldName === "upvoteStatus"
+              );
+              fieldInfos.forEach((fi) => {
+                cache.invalidate("Query", "upvoteStatus", fi.arguments || {});
               });
             },
           },
