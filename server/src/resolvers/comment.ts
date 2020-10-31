@@ -10,6 +10,7 @@ import {
 } from "type-graphql";
 import { Comment } from "../entities/Comment";
 import { Post } from "../entities/Post";
+import { User } from "../entities/User";
 import { MyContext } from "../types";
 
 @Resolver(Comment)
@@ -17,6 +18,11 @@ export default class CommentResolver {
   @FieldResolver(() => Post)
   post(@Root() comment: Comment) {
     return Post.findOne(comment.postId);
+  }
+
+  @FieldResolver(() => User)
+  user(@Root() comment: Comment) {
+    return User.findOne(comment.userId);
   }
 
   @Query(() => [Comment])
