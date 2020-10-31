@@ -55,6 +55,14 @@ const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                   }
                 }
               );
+              //TODO: uh oh bad code
+              const allFields = cache.inspectFields("Query");
+              const fieldInfos = allFields.filter(
+                (info) => info.fieldName === "upvoteStatus"
+              );
+              fieldInfos.forEach((fi) => {
+                cache.invalidate("Query", "upvoteStatus", fi.arguments || {});
+              });
             },
             register: (_result, _, cache, __) => {
               betterUpdateQuery<RegisterMutation, MeQuery>(
@@ -71,6 +79,14 @@ const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                   }
                 }
               );
+              //TODO: uh oh bad code
+              const allFields = cache.inspectFields("Query");
+              const fieldInfos = allFields.filter(
+                (info) => info.fieldName === "upvoteStatus"
+              );
+              fieldInfos.forEach((fi) => {
+                cache.invalidate("Query", "upvoteStatus", fi.arguments || {});
+              });
             },
             logout: (_result, _, cache, __) => {
               betterUpdateQuery<LogoutMutation, MeQuery>(
@@ -79,14 +95,6 @@ const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 _result,
                 () => ({ me: null })
               );
-              //TODO: uh oh bad code, also broken apparently
-              const allFields = cache.inspectFields("Query");
-              const fieldInfos = allFields.filter(
-                (info) => info.fieldName === "upvoteStatus"
-              );
-              fieldInfos.forEach((fi) => {
-                cache.invalidate("Query", "upvoteStatus", fi.arguments || {});
-              });
             },
             updatePost: (_result, args, cache, _) => {
               cache.invalidate({
