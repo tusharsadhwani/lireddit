@@ -4,6 +4,8 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  useColorMode,
+  useTheme,
 } from "@chakra-ui/core";
 import { useField } from "formik";
 import React, { InputHTMLAttributes } from "react";
@@ -31,6 +33,10 @@ export const InputField: React.FC<InputFieldProps> = ({
     ? { minRows: 4, onHeightChange: onResize }
     : {};
 
+  const theme = useTheme() as any;
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+
   return (
     <Box mt={4}>
       <FormControl isInvalid={!!error}>
@@ -45,6 +51,7 @@ export const InputField: React.FC<InputFieldProps> = ({
           {...props}
           id={field.name}
           style={{ WebkitTransition: "unset", transition: "unset" }}
+          borderColor={isDark ? theme.darkColors.border : theme.colors.border}
         />
         {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
       </FormControl>
