@@ -61,7 +61,6 @@ export default class PostResolver {
     @Arg("content", () => String) content: string,
     @Arg("imgUrl", () => String, { nullable: true }) imgUrl?: string
   ): Promise<Post> {
-    console.log(req.session);
     //TODO: make auth middleware, and check if user with that id actually exists
     if (!req.session.userId) throw new Error("Not Logged in");
 

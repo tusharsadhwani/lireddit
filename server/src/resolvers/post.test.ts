@@ -119,7 +119,6 @@ describe("GraphQL tests", () => {
     });
     expect(gqlResponse.data).toBeFalsy();
     expect(gqlResponse.errors).toBeDefined();
-    console.log(gqlResponse);
 
     gqlResponse = await gCall({
       source: DELETE_POST_MUTATION,

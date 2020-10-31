@@ -19,8 +19,6 @@ const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonProps> = ({
   const [, upvote] = useUpvoteMutation();
   const [, downvote] = useDownvoteMutation();
 
-  console.log(upvoteData);
-
   const upvoted = upvoteData?.upvoteStatus;
   const downvoted = upvoteData?.upvoteStatus === false;
 
