@@ -25,14 +25,14 @@ app.prepare().then(() => {
       if (err) throw err;
       console.log(`> Ready on https://localhost`);
     });
+  } else {
+    const server = createServer((req, res) => {
+      const parsedUrl = new URL(req.url, `http://${process.env.DOMAIN}`);
+      handle(req, res, parsedUrl);
+    });
+    server.listen(80, (err) => {
+      if (err) throw err;
+      console.log(`> Ready on http://localhost`);
+    });
   }
-
-  const server = createServer((req, res) => {
-    const parsedUrl = new URL(req.url, `http://${process.env.DOMAIN}`);
-    handle(req, res, parsedUrl);
-  });
-  server.listen(80, (err) => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost`);
-  });
 });
