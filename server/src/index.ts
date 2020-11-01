@@ -46,6 +46,7 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 Years
         sameSite: "lax",
         secure: __prod__,
+        domain: __prod__ ? process.env.DOMAIN : undefined,
       },
       saveUninitialized: false,
       secret: "c56800cfj2qm46890v42qmy8qv0-*9)N$MYT&*#%VM5v789wt30",
@@ -74,7 +75,9 @@ const main = async () => {
       key: privateKey,
       cert: certificate,
     };
-    createServer(options, app).listen(4000);
+    createServer(options, app).listen(4000, () =>
+      console.log("Server started on localhost:4000")
+    );
   } else {
     app.listen(4000, () => console.log("Server started on localhost:4000"));
   }

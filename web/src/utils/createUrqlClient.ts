@@ -30,7 +30,7 @@ const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
   }
 
   return {
-    url: `${process.env.GRAPHQL_ENDPOINT}`,
+    url: `${process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT}`,
     fetchOptions: {
       credentials: "include",
       headers: cookie ? { cookie } : undefined,
