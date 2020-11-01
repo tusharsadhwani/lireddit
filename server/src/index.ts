@@ -8,16 +8,27 @@ import cors from "cors";
 import { createSchema } from "./resolvers/graphql-schema";
 import { createConnection } from "typeorm";
 import { typeormConfig } from "./typeorm.config";
+import { createServer } from "https";
+import fs from "fs";
+
+import dotenv from "dotenv-safe";
+dotenv.config({
+  allowEmptyValues: !__prod__,
+});
 
 const main = async () => {
   const dbName = process.env.TESTING ? TEST_DB_NAME : DB_NAME;
   await createConnection(typeormConfig(dbName));
 
   const app = express();
+  const origin = __prod__
+    ? process.env.CORS_ORIGIN
+    : process.env.CORS_ORIGIN_DEV;
+
   app.use(
     cors({
       credentials: true,
-      origin: "http://localhost:3000",
+      origin: `${origin}`,
     })
   );
 
@@ -51,7 +62,22 @@ const main = async () => {
   });
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.listen(4000, () => console.log("Server started on localhost:4000"));
+  if (process.env.NODE_ENV === "production") {
+    const privateKey = fs
+      .readFileSync(process.env.PRIVATE_KEY_PATH!)
+      .toString();
+    const certificate = fs
+      .readFileSync(process.env.CERTIFICATE_PATH!)
+      .toString();
+
+    const options = {
+      key: privateKey,
+      cert: certificate,
+    };
+    createServer(options, app).listen(4000);
+  } else {
+    app.listen(4000, () => console.log("Server started on localhost:4000"));
+  }
 };
 
 main();
