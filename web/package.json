@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "NODE_ENV='production' node src/server.js",
+    "start": "next start",
     "gen": "graphql-codegen --config codegen.yml",
     "test": "cypress open"
   },

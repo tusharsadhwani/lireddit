@@ -8,12 +8,11 @@ import cors from "cors";
 import { createSchema } from "./resolvers/graphql-schema";
 import { createConnection } from "typeorm";
 import { typeormConfig } from "./typeorm.config";
-import { createServer } from "https";
-import fs from "fs";
 
 import dotenv from "dotenv-safe";
 dotenv.config({
   allowEmptyValues: !__prod__,
+  example: ".env.EXAMPLE",
 });
 
 const main = async () => {
@@ -63,24 +62,7 @@ const main = async () => {
   });
   apolloServer.applyMiddleware({ app, cors: false });
 
-  if (process.env.NODE_ENV === "production") {
-    const privateKey = fs
-      .readFileSync(process.env.PRIVATE_KEY_PATH!)
-      .toString();
-    const certificate = fs
-      .readFileSync(process.env.CERTIFICATE_PATH!)
-      .toString();
-
-    const options = {
-      key: privateKey,
-      cert: certificate,
-    };
-    createServer(options, app).listen(4000, () =>
-      console.log("Server started on localhost:4000")
-    );
-  } else {
-    app.listen(4000, () => console.log("Server started on localhost:4000"));
-  }
+  app.listen(4000, () => console.log("Server started on localhost:4000"));
 };
 
 main();
