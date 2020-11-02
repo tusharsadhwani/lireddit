@@ -50,7 +50,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = () => {
     if (!response.ok) return { success: false, url: "" };
 
     const data = await response.json();
-    const url = data.url as string;
+    const url = data.secure_url as string;
     return { success: true, url };
   };
 
