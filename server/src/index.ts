@@ -33,6 +33,8 @@ const main = async () => {
 
   const redisClient = redis.createClient();
   const RedisStore = connectRedis(session);
+
+  app.set("trust proxy", 1);
   app.use(
     session({
       name: COOKIE_NAME,
