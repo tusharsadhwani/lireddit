@@ -46,7 +46,7 @@ const main = async () => {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 Years
         sameSite: "lax",
-        secure: __prod__,
+        secure: false, // proxying to graphql server with http, false is fine
         domain: __prod__ ? process.env.DOMAIN : undefined,
       },
       saveUninitialized: false,
