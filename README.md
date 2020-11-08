@@ -17,10 +17,15 @@ Original Repository [here](https://github.com/benawad/lireddit).
 
 ## How to deploy
 
-- Server:
+### Server
 
 Setup postgresql: here's guides for [Ubuntu][2] and [Manjaro/Arch][3].
-Create a database called `lireddit`.
+
+Create a database called `lireddit`:
+
+```console
+createdb -U postgres lireddit
+```
 
 Then, in the root project directory, run the following:
 
@@ -37,7 +42,7 @@ yarn build
 yarn start
 ```
 
-- Frontend
+### Web
 
 ```console
 cd web
@@ -56,10 +61,17 @@ yarn start
 
 ## Development setup
 
-- Backend
+### Backend
 
 Setup postgresql: here's guides for [Ubuntu][2] and [Manjaro/Arch][3].
-Create a database called `lireddit`, and another called `lireddit-test`.
+
+Create a database called `lireddit`, and another called `lireddit-test`:
+
+
+```console
+createdb -U postgres lireddit
+createdb -U postgres lireddit-test
+```
 
 Run `yarn watch` in one terminal window, and `yarn dev` in the other.
 
@@ -67,7 +79,7 @@ You get hot reload and database auto-synchronization enabled by default.
 
 Testing: run `yarn test`
 
-- Frontend
+### Frontend
 
 Run `yarn dev` to start the next server in development mode.
 
