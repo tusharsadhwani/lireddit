@@ -3,7 +3,9 @@
 A recreation of Ben Awad's [14 hour Tutorial][1], but with my own subtle
 improvements in code quality and developer experience.
 
-<img src="https://user-images.githubusercontent.com/43412083/122988795-bbecba80-d3bf-11eb-8f20-ab1b0c451588.png" width="280" hspace="10" vspace="20"> <img src="https://user-images.githubusercontent.com/43412083/122988809-bee7ab00-d3bf-11eb-9f29-fd46f3b99c23.png" width="280" hspace="10" vspace="20"> <img src="https://user-images.githubusercontent.com/43412083/122988820-c14a0500-d3bf-11eb-9a3a-64276f5641e5.png" width="280" hspace="10" vspace="20">
+<img src="https://user-images.githubusercontent.com/43412083/122988795-bbecba80-d3bf-11eb-8f20-ab1b0c451588.png" width="250" hspace="5" vspace="20"> <img src="https://user-images.githubusercontent.com/43412083/122988809-bee7ab00-d3bf-11eb-9f29-fd46f3b99c23.png" width="250" hspace="5" vspace="20"> <img src="https://user-images.githubusercontent.com/43412083/122988820-c14a0500-d3bf-11eb-9a3a-64276f5641e5.png" width="250" hspace="5" vspace="20">
+
+## [Demo here](https://lireddit.ml)
 
 Improvements include:
 
